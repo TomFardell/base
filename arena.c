@@ -21,7 +21,7 @@ static void _arena_abort(const char *message, const char *file, int line, ...) {
   exit(EXIT_FAILURE);
 }
 
-Arena arena_init(size_t size) {
+Arena arena_init(U64 size) {
   Arena a = {
       .base_pos = malloc(size),
       .offset = 0,
@@ -35,13 +35,13 @@ Arena arena_init(size_t size) {
   return a;
 }
 
-u8 *arena_alloc(Arena *a, size_t size, size_t align) {
+U8 *arena_alloc(Arena *a, U64 size, U8 align) {
   // Align the first byte to the specified alignment
   if (a->offset % align) {
     a->offset += align - (a->offset % align);
   }
 
-  u8 *start_pos = a->base_pos + a->offset;
+  U8 *start_pos = a->base_pos + a->offset;
 
   a->offset += size;
 
@@ -52,7 +52,9 @@ u8 *arena_alloc(Arena *a, size_t size, size_t align) {
   return start_pos;
 }
 
-void arena_reset(Arena *a) { a->offset = 0; }
+void arena_reset(Arena *a) {
+  a->offset = 0;
+}
 
 void arena_zero(Arena *a) {
   memset(a->base_pos, 0, a->capacity);

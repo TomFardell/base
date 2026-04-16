@@ -1,5 +1,6 @@
 #include "string.h"
 
+#include <stdalign.h>
 #include <stdarg.h>
 #include <stdbool.h>
 #include <stdio.h>
@@ -18,7 +19,7 @@ String string_init_cstring(char *cstr) {
 }
 
 char *string_get_cstring(Arena *a, String str) {
-  char *cstr = (char *)arena_alloc(a, str.len + 1, 1);
+  char *cstr = (char *)arena_alloc(a, str.len + 1, alignof(*cstr));
   memcpy(cstr, str.str, str.len);
   cstr[str.len] = '\0';
 
@@ -76,8 +77,8 @@ String string_concat(Arena *a, U64 count, ...) {
   va_start(args, count);
 
   U64 strings_size = count * sizeof(String);
-  Arena string_arena = arena_init(strings_size);
-  String *strings = (String *)arena_alloc(&string_arena, strings_size, 8);
+  Arena strings_arena = arena_init(strings_size);
+  String *strings = (String *)arena_alloc(&strings_arena, strings_size, alignof(*strings));
 
   for (U64 i = 0; i < count; ++i) {
     strings[i] = va_arg(args, String);
@@ -87,7 +88,7 @@ String string_concat(Arena *a, U64 count, ...) {
 
   String result = string_concat_arr(a, count, strings);
 
-  arena_free(&string_arena);
+  arena_free(&strings_arena);
 
   return result;
 }
@@ -99,11 +100,59 @@ String string_concat_arr(Arena *a, U64 count, String *strings) {
     result.len += strings[i].len;
   }
 
-  result.str = arena_alloc(a, result.len, 1);
+  result.str = arena_alloc(a, result.len, alignof(*result.str));
 
   for (U64 i = 0, pos = 0; i < count; pos += strings[i].len, ++i) {
     memcpy(result.str + pos, strings[i].str, strings[i].len);
   }
+
+  return result;
+}
+
+String string_join(Arena *a, String delimeter, U64 count, ...) {
+  va_list args;
+  va_start(args, count);
+
+  U64 strings_size = count * sizeof(String);
+  Arena strings_arena = arena_init(strings_size);
+  String *strings = (String *)arena_alloc(&strings_arena, strings_size, alignof(*strings));
+
+  for (U64 i = 0; i < count; ++i) {
+    strings[i] = va_arg(args, String);
+  }
+
+  va_end(args);
+
+  String result = string_join_arr(a, delimeter, count, strings);
+
+  arena_free(&strings_arena);
+
+  return result;
+}
+
+String string_join_arr(Arena *a, String delimeter, U64 count, String *strings) {
+  if (count == 0) {
+    return string_literal("");
+  }
+
+  String result = {.len = delimeter.len * (count - 1)};
+
+  for (U64 i = 0; i < count; ++i) {
+    result.len += strings[i].len;
+  }
+
+  result.str = arena_alloc(a, result.len, alignof(result.str));
+
+  U64 pos = 0;
+  for (U64 i = 0; i < count - 1; ++i) {
+    memcpy(result.str + pos, strings[i].str, strings[i].len);
+    pos += strings[i].len;
+
+    memcpy(result.str + pos, delimeter.str, delimeter.len);
+    pos += delimeter.len;
+  }
+
+  memcpy(result.str + pos, strings[count - 1].str, strings[count - 1].len);
 
   return result;
 }

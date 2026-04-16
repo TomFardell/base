@@ -41,6 +41,10 @@ String string_append(Arena *a, String str, String suffix);
 String string_concat(Arena *a, U64 count, ...);
 // Concatenate an array of strings
 String string_concat_arr(Arena *a, U64 count, String *strings);
+// Join an array of strings with a given delimeter
+String string_join(Arena *a, String delimeter, U64 count, ...);
+// Join strings passed as variadic args with a given delimeter
+String string_join_arr(Arena *a, String delimeter, U64 count, String *strings);
 // Get the uppercase of a string
 String string_upper(Arena *a, String str);
 // Get the lowercase of a string

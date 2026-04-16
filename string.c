@@ -33,10 +33,33 @@ bool string_equals(String s1, String s2) {
   return (memcmp(s1.str, s2.str, s1.len) == 0);
 }
 
+bool string_like(String s1, String s2) {
+  if (s1.len != s2.len) {
+    return false;
+  }
+
+  Arena a = arena_init(s1.len + s2.len);
+
+  String s1_low = string_lower(&a, s1);
+  String s2_low = string_lower(&a, s2);
+
+  bool result = (memcmp(s1_low.str, s2_low.str, s1_low.len) == 0);
+
+  arena_free(&a);
+
+  return result;
+}
+
+String string_copy(Arena *a, String str) {
+  String result = string_init(arena_alloc(a, str.len, 1), str.len);
+
+  memcpy(result.str, str.str, str.len);
+
+  return result;
+}
+
 String string_append(Arena *a, String str, String suffix) {
-  String result;
-  result.len = str.len + suffix.len;
-  result.str = arena_alloc(a, result.len, 1);
+  String result = string_init(arena_alloc(a, str.len + suffix.len, 1), str.len + suffix.len);
 
   memcpy(result.str, str.str, str.len);
   memcpy(result.str + str.len, suffix.str, suffix.len);
@@ -80,6 +103,30 @@ String string_concat_arr(Arena *a, U64 count, String *strings) {
 
   for (U64 i = 0, pos = 0; i < count; pos += strings[i].len, ++i) {
     memcpy(result.str + pos, strings[i].str, strings[i].len);
+  }
+
+  return result;
+}
+
+String string_upper(Arena *a, String str) {
+  String result = string_copy(a, str);
+
+  for (U64 i = 0; i < result.len; ++i) {
+    if ('a' <= result.str[i] && result.str[i] <= 'z') {
+      result.str[i] += 'A' - 'a';
+    }
+  }
+
+  return result;
+}
+
+String string_lower(Arena *a, String str) {
+  String result = string_copy(a, str);
+
+  for (U64 i = 0; i < result.len; ++i) {
+    if ('A' <= result.str[i] && result.str[i] <= 'Z') {
+      result.str[i] += 'a' - 'A';
+    }
   }
 
   return result;

@@ -5,7 +5,11 @@
 #include <stdlib.h>
 #include <string.h>
 
-#define arena_abort(message, ...) _arena_abort(message, __FILE__, __LINE__, __VA_ARGS__)
+#define arena_abort(message, ...)                           \
+  do {                                                      \
+    _arena_abort(message, __FILE__, __LINE__, __VA_ARGS__); \
+  } while (0)
+
 static void _arena_abort(const char *message, const char *file, int line, ...) {
   va_list args;
   va_start(args, line);

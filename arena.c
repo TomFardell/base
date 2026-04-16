@@ -65,6 +65,12 @@ void arena_zero(Arena *a) {
   arena_reset(a);
 }
 
+void arena_pop(Arena *a, U64 size) {
+  U64 to_pop = clamp_above(size, a->offset);  // Pop at most the offset
+
+  a->offset -= to_pop;
+}
+
 void arena_free(Arena *a) {
   free(a->base_pos);
   a->base_pos = NULL;

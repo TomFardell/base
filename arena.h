@@ -20,6 +20,8 @@ U8 *arena_alloc(Arena *a, U64 size, U8 align);
 void arena_reset(Arena *a);
 // Zero and reset a given arena
 void arena_zero(Arena *a);
+// Move the offset location back a given number of bytes
+void arena_pop(Arena *a, U64 size);
 
 // Free a given arena
 void arena_free(Arena *a);

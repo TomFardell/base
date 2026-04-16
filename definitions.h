@@ -1,5 +1,6 @@
 #ifndef DEFINITIONS_H
 #define DEFINITIONS_H
+#include <inttypes.h>
 #include <stdint.h>
 
 typedef int8_t I8;
@@ -13,7 +14,20 @@ typedef uint32_t U32;
 typedef uint64_t U64;
 
 typedef float F32;
-typedef float F64;
+typedef double F64;
+
+#define I8f "%" PRIi8
+#define I16f "%" PRIi16
+#define I32f "%" PRIi32
+#define I64f "%" PRIi64
+
+#define U8f "%" PRIu8
+#define U16f "%" PRIu16
+#define U32f "%" PRIu32
+#define U64f "%" PRIu64
+
+#define F32f "%f"
+#define F64f "%lf"
 
 #define KB(n) ((1 << 10) * (n))
 #define MB(n) ((1 << 20) * (n))

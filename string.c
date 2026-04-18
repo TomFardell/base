@@ -52,7 +52,7 @@ bool string_like(String s1, String s2) {
 }
 
 String string_copy(Arena *a, String str) {
-  String result = string_init(arena_alloc(a, str.len, 1), str.len);
+  String result = string_init(arena_alloc(a, str.len, alignof(*result.str)), str.len);
 
   memcpy(result.str, str.str, str.len);
 
@@ -60,7 +60,7 @@ String string_copy(Arena *a, String str) {
 }
 
 String string_append(Arena *a, String str, String suffix) {
-  String result = string_init(arena_alloc(a, str.len + suffix.len, 1), str.len + suffix.len);
+  String result = string_init(arena_alloc(a, str.len + suffix.len, alignof(*result.str)), str.len + suffix.len);
 
   memcpy(result.str, str.str, str.len);
   memcpy(result.str + str.len, suffix.str, suffix.len);
@@ -93,6 +93,7 @@ String string_concat(Arena *a, U64 count, ...) {
   return result;
 }
 
+// TODO: Consider changing to StringArray
 String string_concat_arr(Arena *a, U64 count, String *strings) {
   String result = {0};
 
@@ -176,6 +177,61 @@ String string_lower(Arena *a, String str) {
     if ('A' <= result.str[i] && result.str[i] <= 'Z') {
       result.str[i] += 'a' - 'A';
     }
+  }
+
+  return result;
+}
+
+StringArray string_split(Arena *a, String str, String delimeter) {
+  if (delimeter.len == 0) {
+    StringArray result = {(String *)arena_alloc(a, sizeof(*result.strings), alignof(*result.strings)), 1};
+    result.strings[0] = string_copy(a, str);
+
+    return result;
+  }
+
+  // -- Pass over the input once to figure out how many Strings and chars to allocate on the arena --
+
+  U64 split_strs_size = 0;
+  U64 split_strs_count = 0;
+  for (U64 i = 0, curr_str_len = 0; i <= str.len; ++i) {
+    if ((i == str.len) || string_equals(string_init(str.str + i, delimeter.len), delimeter)) {
+      split_strs_size += curr_str_len;
+      split_strs_count += (curr_str_len > 0);
+
+      curr_str_len = 0;
+      i += delimeter.len - 1;
+
+      continue;
+    }
+
+    ++curr_str_len;
+  }
+
+  U8 *result_store = (U8 *)arena_alloc(a, split_strs_size * sizeof(*result_store), alignof(*result_store));
+  U8 *result_pos = result_store;
+  StringArray result = {
+      (String *)arena_alloc(a, split_strs_count * sizeof(*result.strings), alignof(*result.strings)),
+      split_strs_count};
+
+  // -- Now pass over again and actually store the split strings --
+
+  for (U64 i = 0, curr_str_len = 0, str_count = 0; i <= str.len; ++i) {
+    if ((i == str.len) || string_equals(string_init(str.str + i, delimeter.len), delimeter)) {
+      if (curr_str_len > 0) {
+        memcpy(result_pos, str.str + i - curr_str_len, curr_str_len);
+        result.strings[str_count] = string_init(result_pos, curr_str_len);
+        ++str_count;
+        result_pos += curr_str_len;
+      }
+
+      curr_str_len = 0;
+      i += delimeter.len - 1;
+
+      continue;
+    }
+
+    ++curr_str_len;
   }
 
   return result;

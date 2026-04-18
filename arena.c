@@ -5,20 +5,22 @@
 #include <stdlib.h>
 #include <string.h>
 
-#define arena_abort(message, ...)                           \
-  do {                                                      \
-    _arena_abort(message, __FILE__, __LINE__, __VA_ARGS__); \
+#define arena_abort(message, ...)                                     \
+  do {                                                                \
+    _arena_abort(message, __FILE__, __LINE__, __func__, __VA_ARGS__); \
   } while (0)
 
-static void _arena_abort(const char *message, const char *file, int line, ...) {
+static void _arena_abort(const char *message, const char *file, int line, const char *func, ...) {
   va_list args;
-  va_start(args, line);
+  va_start(args, func);
 
-  printf("----| Arena error |----\n");
-  printf("> Error in %s on line %d\n", file, line);
-  printf("> ");
+  fprintf(stderr, "\n");
+  fprintf(stderr, "> ---| Arena error |---\n");
+  fprintf(stderr, "> Error in %s->%s (line %d) in\n", file, func, line);
+  fprintf(stderr, "> ");
   vfprintf(stderr, message, args);
-  printf("Terminating program\n");
+  fprintf(stderr, "\n");
+  fprintf(stderr, "Terminating program\n");
 
   va_end(args);
 
@@ -50,7 +52,7 @@ U8 *arena_alloc(Arena *a, U64 size, U8 align) {
   a->offset += size;
 
   if (a->offset > a->capacity) {
-    return NULL;  // Return a null pointer if not enough memory allocated
+    arena_abort("Attempting to allocate " U64f " bytes in arena of capacity " U64f "\n", a->offset, a->capacity);
   }
 
   return start_pos;

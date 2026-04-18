@@ -12,6 +12,11 @@ typedef struct String {
   U64 len;
 } String;
 
+typedef struct StringArray {
+  String *strings;
+  U64 count;
+} StringArray;
+
 #define string_literal(cstr_lit) (String){(U8 *)cstr_lit, (sizeof cstr_lit) - 1}
 
 // Get a string given a memory location and length
@@ -49,6 +54,8 @@ String string_join_arr(Arena *a, String delimeter, U64 count, String *strings);
 String string_upper(Arena *a, String str);
 // Get the lowercase of a string
 String string_lower(Arena *a, String str);
+// Split a string into an array on a given delimeter
+StringArray string_split(Arena *a, String str, String delimeter);
 
 #endif  // STRING_H
 

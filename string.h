@@ -25,6 +25,8 @@ String string_init(U8 *str, U64 len);
 String string_init_range(U8 *start, U8 *end);
 // Get the string equivalent of a given cstring
 String string_init_cstring(char *cstr);
+// Get the substring of a given string between a start index (inclusive) and an end index (exclusive)
+String string_init_substring(String str, U64 start, U64 end);
 
 // Get the null-terminated equiavalent of a String, alllocating the result on the given arena
 char *string_get_cstring(Arena *a, String str);
@@ -54,7 +56,8 @@ String string_join_arr(Arena *a, String delimeter, U64 count, String *strings);
 String string_upper(Arena *a, String str);
 // Get the lowercase of a string
 String string_lower(Arena *a, String str);
-// Split a string into an array on a given delimeter
+
+// Split a string into an array on a given delimeter. The resulting array is allocated on the passed arena
 StringArray string_split(Arena *a, String str, String delimeter);
 
 #endif  // STRING_H

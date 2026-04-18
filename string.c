@@ -6,6 +6,28 @@
 #include <stdio.h>
 #include <string.h>
 
+#define string_abort(message, ...)                                     \
+  do {                                                                 \
+    _string_abort(message, __FILE__, __LINE__, __func__, __VA_ARGS__); \
+  } while (0)
+
+static void _string_abort(const char *message, const char *file, int line, const char *func, ...) {
+  va_list args;
+  va_start(args, func);
+
+  fprintf(stderr, "\n");
+  fprintf(stderr, "> ---| String error |---\n");
+  fprintf(stderr, "> Error in %s->%s (line %d)\n", file, func, line);
+  fprintf(stderr, "> ");
+  vfprintf(stderr, message, args);
+  fprintf(stderr, "\n");
+  fprintf(stderr, "Terminating program\n");
+
+  va_end(args);
+
+  exit(EXIT_FAILURE);
+}
+
 String string_init(U8 *str, U64 len) {
   return (String){str, len};
 }
@@ -16,6 +38,18 @@ String string_init_range(U8 *start, U8 *end) {
 
 String string_init_cstring(char *cstr) {
   return string_init((U8 *)cstr, strlen(cstr));
+}
+
+String string_init_substring(String str, U64 start, U64 end) {
+  if (start > end) {
+    string_abort("Substring start index after end index (" U64f " > " U64f ")\n", start, end);
+  }
+
+  if (end > str.len) {
+    string_abort("Substring end index greater than string length (" U64f " > " U64f ")\n", end, str.len);
+  }
+
+  return string_init_range(str.str + start, str.str + end);
 }
 
 char *string_get_cstring(Arena *a, String str) {
@@ -39,7 +73,7 @@ bool string_like(String s1, String s2) {
     return false;
   }
 
-  Arena a = arena_init(s1.len + s2.len);
+  Arena a = arena_init((s1.len + s2.len) * sizeof(*s1.str));
 
   String s1_low = string_lower(&a, s1);
   String s2_low = string_lower(&a, s2);

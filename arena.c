@@ -16,7 +16,7 @@ static void _arena_abort(const char *message, const char *file, int line, const 
 
   fprintf(stderr, "\n");
   fprintf(stderr, "> ---| Arena error |---\n");
-  fprintf(stderr, "> Error in %s->%s (line %d) in\n", file, func, line);
+  fprintf(stderr, "> Error in %s->%s (line %d)\n", file, func, line);
   fprintf(stderr, "> ");
   vfprintf(stderr, message, args);
   fprintf(stderr, "\n");
@@ -35,7 +35,7 @@ Arena arena_init(U64 size) {
   };
 
   if (!a.base_pos) {
-    arena_abort("Error allocating arena of size %zu bytes\n", size);
+    arena_abort("Error allocating arena of size " U64f " bytes\n", size);
   }
 
   return a;

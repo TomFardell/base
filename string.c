@@ -190,39 +190,16 @@ StringArray string_split(Arena *a, String str, String delimeter) {
     return result;
   }
 
-  // -- Pass over the input once to figure out how many Strings and chars to allocate on the arena --
+  // Get the pointer to where the strings will be allocated without actually making an allocation
+  StringArray result = {(String *)arena_alloc(a, 0, alignof(*result.strings)), 0};
 
-  U64 split_strs_size = 0;
-  U64 split_strs_count = 0;
   for (U64 i = 0, curr_str_len = 0; i <= str.len; ++i) {
     if ((i == str.len) || string_equals(string_init(str.str + i, delimeter.len), delimeter)) {
-      split_strs_size += curr_str_len;
-      split_strs_count += (curr_str_len > 0);
-
-      curr_str_len = 0;
-      i += delimeter.len - 1;
-
-      continue;
-    }
-
-    ++curr_str_len;
-  }
-
-  U8 *result_store = (U8 *)arena_alloc(a, split_strs_size * sizeof(*result_store), alignof(*result_store));
-  U8 *result_pos = result_store;
-  StringArray result = {
-      (String *)arena_alloc(a, split_strs_count * sizeof(*result.strings), alignof(*result.strings)),
-      split_strs_count};
-
-  // -- Now pass over again and actually store the split strings --
-
-  for (U64 i = 0, curr_str_len = 0, str_count = 0; i <= str.len; ++i) {
-    if ((i == str.len) || string_equals(string_init(str.str + i, delimeter.len), delimeter)) {
       if (curr_str_len > 0) {
-        memcpy(result_pos, str.str + i - curr_str_len, curr_str_len);
-        result.strings[str_count] = string_init(result_pos, curr_str_len);
-        ++str_count;
-        result_pos += curr_str_len;
+        // Since we don't use the arena for anything else, we can assume the strings will be allocated in a block
+        arena_alloc(a, sizeof(*result.strings), alignof(*result.strings));
+        // TODO: Write substring method
+        result.strings[result.count++] = string_init(str.str + i - curr_str_len, curr_str_len);
       }
 
       curr_str_len = 0;

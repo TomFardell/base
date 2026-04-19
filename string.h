@@ -27,6 +27,8 @@ String string_init_range(U8 *start, U8 *end);
 String string_init_cstring(char *cstr);
 // Get the substring of a given string between a start index (inclusive) and an end index (exclusive)
 String string_init_substring(String str, U64 start, U64 end);
+// Allocate a new string on a given arena
+String string_alloc(Arena *a, U64 len);
 
 // Get the null-terminated equiavalent of a String, alllocating the result on the given arena
 char *string_get_cstring(Arena *a, String str);
@@ -47,15 +49,17 @@ String string_append(Arena *a, String str, String suffix);
 // Concatenate strings passed as variadic args
 String string_concat(Arena *a, U64 count, ...);
 // Concatenate an array of strings
-String string_concat_arr(Arena *a, U64 count, String *strings);
+String string_concat_arr(Arena *a, StringArray str_arr);
 // Join an array of strings with a given delimeter
 String string_join(Arena *a, String delimeter, U64 count, ...);
 // Join strings passed as variadic args with a given delimeter
-String string_join_arr(Arena *a, String delimeter, U64 count, String *strings);
+String string_join_arr(Arena *a, String delimeter, StringArray str_arr);
 // Get the uppercase of a string
 String string_upper(Arena *a, String str);
 // Get the lowercase of a string
 String string_lower(Arena *a, String str);
+// Get the reverse of a string
+String string_reverse(Arena *a, String str);
 
 // Split a string into an array on a given delimeter. The resulting array is allocated on the passed arena
 StringArray string_split(Arena *a, String str, String delimeter);

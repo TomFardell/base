@@ -52,6 +52,12 @@ String string_init_substring(String str, U64 start, U64 end) {
   return string_init_range(str.str + start, str.str + end);
 }
 
+String string_alloc(Arena *a, U64 len) {
+  String result = {arena_alloc(a, len * sizeof(*result.str), alignof(*result.str)), len};
+
+  return result;
+}
+
 char *string_get_cstring(Arena *a, String str) {
   char *cstr = (char *)arena_alloc(a, str.len + 1, alignof(*cstr));
   memcpy(cstr, str.str, str.len);
@@ -120,25 +126,24 @@ String string_concat(Arena *a, U64 count, ...) {
 
   va_end(args);
 
-  String result = string_concat_arr(a, count, strings);
+  String result = string_concat_arr(a, (StringArray){strings, count});
 
   arena_free(&strings_arena);
 
   return result;
 }
 
-// TODO: Consider changing to StringArray
-String string_concat_arr(Arena *a, U64 count, String *strings) {
+String string_concat_arr(Arena *a, StringArray str_arr) {
   String result = {0};
 
-  for (U64 i = 0; i < count; ++i) {
-    result.len += strings[i].len;
+  for (U64 i = 0; i < str_arr.count; ++i) {
+    result.len += str_arr.strings[i].len;
   }
 
   result.str = arena_alloc(a, result.len, alignof(*result.str));
 
-  for (U64 i = 0, pos = 0; i < count; pos += strings[i].len, ++i) {
-    memcpy(result.str + pos, strings[i].str, strings[i].len);
+  for (U64 i = 0, pos = 0; i < str_arr.count; pos += str_arr.strings[i].len, ++i) {
+    memcpy(result.str + pos, str_arr.strings[i].str, str_arr.strings[i].len);
   }
 
   return result;
@@ -158,44 +163,46 @@ String string_join(Arena *a, String delimeter, U64 count, ...) {
 
   va_end(args);
 
-  String result = string_join_arr(a, delimeter, count, strings);
+  String result = string_join_arr(a, delimeter, (StringArray){strings, count});
 
   arena_free(&strings_arena);
 
   return result;
 }
 
-String string_join_arr(Arena *a, String delimeter, U64 count, String *strings) {
-  if (count == 0) {
+String string_join_arr(Arena *a, String delimeter, StringArray str_arr) {
+  if (str_arr.count == 0) {
     return string_literal("");
   }
 
-  String result = {.len = delimeter.len * (count - 1)};
+  String result = {.len = delimeter.len * (str_arr.count - 1)};
 
-  for (U64 i = 0; i < count; ++i) {
-    result.len += strings[i].len;
+  for (U64 i = 0; i < str_arr.count; ++i) {
+    result.len += str_arr.strings[i].len;
   }
 
   result.str = arena_alloc(a, result.len, alignof(result.str));
 
   U64 pos = 0;
-  for (U64 i = 0; i < count - 1; ++i) {
-    memcpy(result.str + pos, strings[i].str, strings[i].len);
-    pos += strings[i].len;
+  for (U64 i = 0; i < str_arr.count - 1; ++i) {
+    memcpy(result.str + pos, str_arr.strings[i].str, str_arr.strings[i].len);
+    pos += str_arr.strings[i].len;
 
     memcpy(result.str + pos, delimeter.str, delimeter.len);
     pos += delimeter.len;
   }
 
-  memcpy(result.str + pos, strings[count - 1].str, strings[count - 1].len);
+  memcpy(result.str + pos, str_arr.strings[str_arr.count - 1].str, str_arr.strings[str_arr.count - 1].len);
 
   return result;
 }
 
 String string_upper(Arena *a, String str) {
-  String result = string_copy(a, str);
+  String result = string_alloc(a, str.len);
 
   for (U64 i = 0; i < result.len; ++i) {
+    result.str[i] = str.str[i];
+
     if ('a' <= result.str[i] && result.str[i] <= 'z') {
       result.str[i] += 'A' - 'a';
     }
@@ -205,12 +212,24 @@ String string_upper(Arena *a, String str) {
 }
 
 String string_lower(Arena *a, String str) {
-  String result = string_copy(a, str);
+  String result = string_alloc(a, str.len);
 
   for (U64 i = 0; i < result.len; ++i) {
-    if ('A' <= result.str[i] && result.str[i] <= 'Z') {
-      result.str[i] += 'a' - 'A';
+    result.str[i] = str.str[i];
+
+    if ('A' <= str.str[i] && str.str[i] <= 'Z') {
+      result.str[i] = str.str[i] + 'a' - 'A';
     }
+  }
+
+  return result;
+}
+
+String string_reverse(Arena *a, String str) {
+  String result = string_alloc(a, str.len);
+
+  for (U64 i = 0; i < str.len; ++i) {
+    result.str[i] = str.str[str.len - i - 1];
   }
 
   return result;
@@ -232,8 +251,7 @@ StringArray string_split(Arena *a, String str, String delimeter) {
       if (curr_str_len > 0) {
         // Since we don't use the arena for anything else, we can assume the strings will be allocated in a block
         arena_alloc(a, sizeof(*result.strings), alignof(*result.strings));
-        // TODO: Write substring method
-        result.strings[result.count++] = string_init(str.str + i - curr_str_len, curr_str_len);
+        result.strings[result.count++] = string_init_substring(str, i - curr_str_len, i);
       }
 
       curr_str_len = 0;

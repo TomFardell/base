@@ -13,7 +13,7 @@ typedef struct Arena {
 
 // Initialise an arena of a given size
 Arena arena_init(U64 size);
-// Allocate a block of memory inside an arena, aligning the start of the block with a given alignement
+// Allocate a block of memory inside an arena, aligning the start of the block with a given alignment
 U8 *arena_alloc(Arena *a, U64 size, U8 align);
 
 // Reset a given arena without zeroing its contents

@@ -42,11 +42,11 @@ String string_init_cstring(char *cstr) {
 
 String string_init_substring(String str, U64 start, U64 end) {
   if (start > end) {
-    string_abort("Substring start index after end index (" U64f " > " U64f ")\n", start, end);
+    string_abort("Substring start index after end index (%" U64f " > %" U64f ")\n", start, end);
   }
 
   if (end > str.len) {
-    string_abort("Substring end index greater than string length (" U64f " > " U64f ")\n", end, str.len);
+    string_abort("Substring end index greater than string length (%" U64f " > %" U64f ")\n", end, str.len);
   }
 
   return string_init_range(str.str + start, str.str + end);
@@ -231,6 +231,26 @@ String string_reverse(Arena *a, String str) {
   for (U64 i = 0; i < str.len; ++i) {
     result.str[i] = str.str[str.len - i - 1];
   }
+
+  return result;
+}
+
+// Would almost always be calling this with a literal format, so makes sense to have it as a cstring
+String string_format(Arena *a, const char *format, ...) {
+  va_list args;
+  va_start(args, format);
+
+  // First determine the buffer size required before allocating anything
+  U64 size_required = vsnprintf(NULL, 0, format, args);
+
+  va_start(args, format);  // Need to call this again in order to reuse the args
+
+  String result = string_alloc(a, size_required);
+  arena_alloc(a, 1, 1);  // Allocate an extra byte since printf will output a null terminator
+  vsnprintf((char *)result.str, size_required + 1, format, args);
+  arena_pop(a, 1);  // Pop the null terminator, since this is unused
+
+  va_end(args);
 
   return result;
 }

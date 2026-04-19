@@ -16,15 +16,15 @@ typedef uint64_t U64;
 typedef float F32;
 typedef double F64;
 
-#define I8f "%" PRIi8
-#define I16f "%" PRIi16
-#define I32f "%" PRIi32
-#define I64f "%" PRIi64
+#define I8f PRIi8
+#define I16f PRIi16
+#define I32f PRIi32
+#define I64f PRIi64
 
-#define U8f "%" PRIu8
-#define U16f "%" PRIu16
-#define U32f "%" PRIu32
-#define U64f "%" PRIu64
+#define U8f PRIu8
+#define U16f PRIu16
+#define U32f PRIu32
+#define U64f PRIu64
 
 #define F32f "%f"
 #define F64f "%lf"

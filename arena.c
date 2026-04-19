@@ -35,7 +35,7 @@ Arena arena_init(U64 size) {
   };
 
   if (!a.base_pos) {
-    arena_abort("Error allocating arena of size " U64f " bytes\n", size);
+    arena_abort("Error allocating arena of size %" U64f " bytes\n", size);
   }
 
   return a;
@@ -52,7 +52,7 @@ U8 *arena_alloc(Arena *a, U64 size, U8 align) {
   a->offset += size;
 
   if (a->offset > a->capacity) {
-    arena_abort("Attempting to allocate " U64f " bytes in arena of capacity " U64f "\n", a->offset, a->capacity);
+    arena_abort("Attempting to allocate %" U64f " bytes in arena of capacity %" U64f "\n", a->offset, a->capacity);
   }
 
   return start_pos;

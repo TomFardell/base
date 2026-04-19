@@ -60,6 +60,8 @@ String string_upper(Arena *a, String str);
 String string_lower(Arena *a, String str);
 // Get the reverse of a string
 String string_reverse(Arena *a, String str);
+// Format a string using printf format rules
+String string_format(Arena *a, const char *format, ...);
 
 // Split a string into an array on a given delimeter. The resulting array is allocated on the passed arena
 StringArray string_split(Arena *a, String str, String delimeter);

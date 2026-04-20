@@ -245,13 +245,38 @@ String string_format(Arena *a, const char *format, ...) {
 
   va_start(args, format);  // Need to call this again in order to reuse the args
 
-  String result = string_alloc(a, size_required);
-  arena_alloc(a, 1, 1);  // Allocate an extra byte since printf will output a null terminator
-  vsnprintf((char *)result.str, size_required + 1, format, args);
+  String result = string_alloc(a, size_required + 1);  // Allocate an extra byte for the null terminator
+  vsnprintf((char *)result.str, result.len, format, args);
   arena_pop(a, 1);  // Pop the null terminator, since this is unused
+  result.len--;
 
   va_end(args);
 
+  return result;
+}
+
+String string_remove(Arena *a, String str, String rem) {
+  if ((rem.len > str.len) || (rem.len == 0)) {
+    // TODO: Think about whether this should be a copy
+    return str;
+  }
+  String result = string_alloc(a, str.len);  // Max length would be if nothing is removed
+
+  U64 str_i = 0, res_i = 0;
+  while (str_i < str.len) {
+    // TODO: memcmp macro
+    if ((str_i + rem.len - 1 < str.len) && memcmp(str.str + str_i, rem.str, rem.len) == 0) {
+      str_i += rem.len;
+      continue;
+    }
+
+    result.str[res_i] = str.str[str_i];
+    ++str_i;
+    ++res_i;
+  }
+
+  arena_pop(a, str_i - res_i);  // Pop the unused bytes of the result
+  result.len = res_i;
   return result;
 }
 

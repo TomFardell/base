@@ -62,6 +62,8 @@ String string_lower(Arena *a, String str);
 String string_reverse(Arena *a, String str);
 // Format a string using printf format rules
 String string_format(Arena *a, const char *format, ...);
+// Remove all instances of a substring from a string
+String string_remove(Arena *a, String str, String rem);
 
 // Split a string into an array on a given delimeter. The resulting array is allocated on the passed arena
 StringArray string_split(Arena *a, String str, String delimeter);

@@ -71,7 +71,7 @@ bool string_equals(String s1, String s2) {
     return false;
   }
 
-  return (memcmp(s1.str, s2.str, s1.len) == 0);
+  return mem_equals(s1.str, s2.str, s1.len);
 }
 
 bool string_like(String s1, String s2) {
@@ -84,7 +84,7 @@ bool string_like(String s1, String s2) {
   String s1_low = string_lower(&a, s1);
   String s2_low = string_lower(&a, s2);
 
-  bool result = (memcmp(s1_low.str, s2_low.str, s1_low.len) == 0);
+  bool result = mem_equals(s1_low.str, s2_low.str, s1_low.len);
 
   arena_free(&a);
 
@@ -257,15 +257,13 @@ String string_format(Arena *a, const char *format, ...) {
 
 String string_remove(Arena *a, String str, String rem) {
   if ((rem.len > str.len) || (rem.len == 0)) {
-    // TODO: Think about whether this should be a copy
     return str;
   }
   String result = string_alloc(a, str.len);  // Max length would be if nothing is removed
 
   U64 str_i = 0, res_i = 0;
   while (str_i < str.len) {
-    // TODO: memcmp macro
-    if ((str_i + rem.len - 1 < str.len) && memcmp(str.str + str_i, rem.str, rem.len) == 0) {
+    if ((str_i + rem.len - 1 < str.len) && mem_equals(str.str + str_i, rem.str, rem.len)) {
       str_i += rem.len;
       continue;
     }
@@ -278,6 +276,26 @@ String string_remove(Arena *a, String str, String rem) {
   arena_pop(a, str_i - res_i);  // Pop the unused bytes of the result
   result.len = res_i;
   return result;
+}
+
+bool string_contains(String str, String substr) {
+  return (string_find_first(str, substr) != str.len);
+}
+
+U64 string_find_first(String str, String substr) {
+  if (substr.len == 0) {
+    return str.len;
+  }
+
+  // str_i + rem.len - 1 < str.len
+  for (U64 i = 0; i < str.len - substr.len + 1; ++i) {
+    if (mem_equals(str.str + i, substr.str, substr.len)) {
+      return i;
+    }
+  }
+
+  // TODO: Would using -1 be consistent here. Look at integer maxes and set up macros for these
+  return str.len;
 }
 
 StringArray string_split(Arena *a, String str, String delimeter) {

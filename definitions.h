@@ -2,6 +2,7 @@
 #define DEFINITIONS_H
 #include <inttypes.h>
 #include <stdint.h>
+#include <string.h>
 
 typedef int8_t I8;
 typedef int16_t I16;
@@ -38,6 +39,8 @@ typedef double F64;
 #define clamp(low, x, high) (((x) < (low)) ? (low) : (((x) > (high)) ? (high) : (x)))
 #define clamp_above(x, high) min(x, high)
 #define clamp_below(x, low) max(x, low)
+
+#define mem_equals(m1, m2, size) (memcmp(m1, m2, size) == 0)
 
 #endif  // ifndef DEFINITIONS_H
 

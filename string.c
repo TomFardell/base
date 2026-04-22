@@ -137,13 +137,13 @@ String string_concat_arr(Arena *a, StringArray str_arr) {
   String result = {0};
 
   for (U64 i = 0; i < str_arr.count; ++i) {
-    result.len += str_arr.strings[i].len;
+    result.len += str_arr.data[i].len;
   }
 
   result.str = arena_alloc(a, result.len, alignof(*result.str));
 
-  for (U64 i = 0, pos = 0; i < str_arr.count; pos += str_arr.strings[i].len, ++i) {
-    memcpy(result.str + pos, str_arr.strings[i].str, str_arr.strings[i].len);
+  for (U64 i = 0, pos = 0; i < str_arr.count; pos += str_arr.data[i].len, ++i) {
+    memcpy(result.str + pos, str_arr.data[i].str, str_arr.data[i].len);
   }
 
   return result;
@@ -178,21 +178,21 @@ String string_join_arr(Arena *a, String delimeter, StringArray str_arr) {
   String result = {.len = delimeter.len * (str_arr.count - 1)};
 
   for (U64 i = 0; i < str_arr.count; ++i) {
-    result.len += str_arr.strings[i].len;
+    result.len += str_arr.data[i].len;
   }
 
   result.str = arena_alloc(a, result.len, alignof(result.str));
 
   U64 pos = 0;
   for (U64 i = 0; i < str_arr.count - 1; ++i) {
-    memcpy(result.str + pos, str_arr.strings[i].str, str_arr.strings[i].len);
-    pos += str_arr.strings[i].len;
+    memcpy(result.str + pos, str_arr.data[i].str, str_arr.data[i].len);
+    pos += str_arr.data[i].len;
 
     memcpy(result.str + pos, delimeter.str, delimeter.len);
     pos += delimeter.len;
   }
 
-  memcpy(result.str + pos, str_arr.strings[str_arr.count - 1].str, str_arr.strings[str_arr.count - 1].len);
+  memcpy(result.str + pos, str_arr.data[str_arr.count - 1].str, str_arr.data[str_arr.count - 1].len);
 
   return result;
 }
@@ -283,38 +283,57 @@ bool string_contains(String str, String substr) {
 }
 
 U64 string_find_first(String str, String substr) {
-  if (substr.len == 0) {
+  if ((substr.len == 0) || (str.len < substr.len)) {
     return str.len;
   }
 
-  // str_i + rem.len - 1 < str.len
   for (U64 i = 0; i < str.len - substr.len + 1; ++i) {
     if (mem_equals(str.str + i, substr.str, substr.len)) {
       return i;
     }
   }
 
-  // TODO: Would using -1 be consistent here. Look at integer maxes and set up macros for these
+  // TODO: Would using -1 be consistent here? Look at integer maxes and set up macros for these
   return str.len;
+}
+
+U64Array string_find_all(Arena *a, String str, String substr) {
+  // Get the pointer to where the data will be allocated without actually making an allocation
+  U64Array result = {(U64 *)arena_alloc(a, 0, alignof(*result.data)), 0};
+
+  if ((substr.len == 0) || (str.len < substr.len)) {
+    return result;
+  }
+
+  // Specifically don't skip over the substr
+  for (U64 i = 0; i < str.len - substr.len + 1; ++i) {
+    if (mem_equals(str.str + i, substr.str, substr.len)) {
+      // Since we don't use the arena for anything else, we can assume the data will be allocated in a block
+      arena_alloc(a, sizeof(*result.data), alignof(*result.data));
+      result.data[result.count++] = i;
+    }
+  }
+
+  return result;
 }
 
 StringArray string_split(Arena *a, String str, String delimeter) {
   if (delimeter.len == 0) {
-    StringArray result = {(String *)arena_alloc(a, sizeof(*result.strings), alignof(*result.strings)), 1};
-    result.strings[0] = string_copy(a, str);
+    StringArray result = {(String *)arena_alloc(a, sizeof(*result.data), alignof(*result.data)), 1};
+    result.data[0] = string_copy(a, str);
 
     return result;
   }
 
   // Get the pointer to where the strings will be allocated without actually making an allocation
-  StringArray result = {(String *)arena_alloc(a, 0, alignof(*result.strings)), 0};
+  StringArray result = {(String *)arena_alloc(a, 0, alignof(*result.data)), 0};
 
   for (U64 i = 0, curr_str_len = 0; i <= str.len; ++i) {
     if ((i == str.len) || string_equals(string_init(str.str + i, delimeter.len), delimeter)) {
       if (curr_str_len > 0) {
         // Since we don't use the arena for anything else, we can assume the strings will be allocated in a block
-        arena_alloc(a, sizeof(*result.strings), alignof(*result.strings));
-        result.strings[result.count++] = string_init_substring(str, i - curr_str_len, i);
+        arena_alloc(a, sizeof(*result.data), alignof(*result.data));
+        result.data[result.count++] = string_init_substring(str, i - curr_str_len, i);
       }
 
       curr_str_len = 0;

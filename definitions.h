@@ -17,6 +17,11 @@ typedef uint64_t U64;
 typedef float F32;
 typedef double F64;
 
+typedef struct U64Array {
+  U64 *data;
+  U64 count;
+} U64Array;
+
 #define I8f PRIi8
 #define I16f PRIi16
 #define I32f PRIi32

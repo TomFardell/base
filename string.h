@@ -13,11 +13,13 @@ typedef struct String {
 } String;
 
 typedef struct StringArray {
-  String *strings;
+  String *data;
   U64 count;
 } StringArray;
 
 #define string_literal(cstr_lit) (String){(U8 *)cstr_lit, (sizeof cstr_lit) - 1}
+
+// -- Methods taking an arena allocate their result on that arena --
 
 // Get a string given a memory location and length
 String string_init(U8 *str, U64 len);
@@ -30,15 +32,13 @@ String string_init_substring(String str, U64 start, U64 end);
 // Allocate a new string on a given arena
 String string_alloc(Arena *a, U64 len);
 
-// Get the null-terminated equiavalent of a String, alllocating the result on the given arena
+// Get the null-terminated equiavalent of a String
 char *string_get_cstring(Arena *a, String str);
 
 // Check whether two strings are equal
 bool string_equals(String s1, String s2);
 // Check whether two strings are equal up to differences in case
 bool string_like(String s1, String s2);
-
-// -- These methods allocate the resulting string on the arena passed to them --
 
 // Copy a string
 String string_copy(Arena *a, String str);
@@ -69,8 +69,10 @@ String string_remove(Arena *a, String str, String rem);
 bool string_contains(String str, String substr);
 // Get the index of the start of the first occurrence of a substring in a string. Return string length if not found
 U64 string_find_first(String str, String substr);
+// Get the indices of the start of all occurrence of a substring in a string
+U64Array string_find_all(Arena *a, String str, String substr);
 
-// Split a string into an array on a given delimeter. The resulting array is allocated on the passed arena
+// Split a string into an array on a given delimeter
 StringArray string_split(Arena *a, String str, String delimeter);
 
 #endif  // STRING_H

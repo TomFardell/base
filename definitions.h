@@ -45,8 +45,6 @@ typedef struct U64Array {
 #define clamp_above(x, high) min(x, high)
 #define clamp_below(x, low) max(x, low)
 
-#define mem_equals(m1, m2, size) (memcmp(m1, m2, size) == 0)
-
 #endif  // ifndef DEFINITIONS_H
 
 // vim: filetype=c :

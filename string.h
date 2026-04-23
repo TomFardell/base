@@ -4,8 +4,8 @@
 #include <stdarg.h>
 #include <stdbool.h>
 
-#include "arena.h"
 #include "definitions.h"
+#include "memory.h"
 
 typedef struct String {
   U8 *str;

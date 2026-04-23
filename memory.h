@@ -1,5 +1,5 @@
-#ifndef ARENA_H
-#define ARENA_H
+#ifndef MEMORY_H
+#define MEMORY_H
 
 #include <stdlib.h>
 
@@ -10,6 +10,13 @@ typedef struct Arena {
   U64 offset;
   U64 capacity;
 } Arena;
+
+#define mem_equals(m1, m2, size) (memcmp(m1, m2, size) == 0)
+
+// Swap two pointers
+void mem_swap(void **mem1, void **mem2);
+
+// -- Arena methods --
 
 // Initialise an arena of a given size
 Arena arena_init(U64 size);
@@ -26,6 +33,6 @@ void arena_pop(Arena *a, U64 size);
 // Free a given arena
 void arena_free(Arena *a);
 
-#endif  // ARENA_H
+#endif  // MEMORY_H
 
 // vim: filetype=c :

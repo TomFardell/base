@@ -6,6 +6,8 @@
 #include <stdio.h>
 #include <string.h>
 
+#include "memory.h"
+
 #define string_abort(message, ...)                                     \
   do {                                                                 \
     _string_abort(message, __FILE__, __LINE__, __func__, __VA_ARGS__); \

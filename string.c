@@ -281,7 +281,7 @@ String string_remove(Arena *a, String str, String rem) {
 }
 
 bool string_contains(String str, String substr) {
-  return (string_find_first(str, substr) != str.len);
+  return (string_find_first(str, substr) != U64NULL);
 }
 
 U64 string_find_first(String str, String substr) {
@@ -295,8 +295,7 @@ U64 string_find_first(String str, String substr) {
     }
   }
 
-  // TODO: Would using -1 be consistent here? Look at integer maxes and set up macros for these
-  return str.len;
+  return U64NULL;
 }
 
 U64Array string_find_all(Arena *a, String str, String substr) {

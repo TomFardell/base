@@ -19,7 +19,7 @@ typedef struct StringArray {
 
 #define string_literal(cstr_lit) (String){(U8 *)cstr_lit, (sizeof cstr_lit) - 1}
 
-// -- Methods taking an arena allocate their result on that arena --
+// NOTE: Methods taking an arena allocate their result on that arena
 
 // Get a string given a memory location and length
 String string_init(U8 *str, U64 len);
@@ -67,7 +67,7 @@ String string_remove(Arena *a, String str, String rem);
 
 // Determine whether a substring exists in the given string
 bool string_contains(String str, String substr);
-// Get the index of the start of the first occurrence of a substring in a string. Return string length if not found
+// Get the index of the start of the first occurrence of a substring in a string
 U64 string_find_first(String str, String substr);
 // Get the indices of the start of all occurrence of a substring in a string
 U64Array string_find_all(Arena *a, String str, String substr);

@@ -16,7 +16,7 @@ typedef struct Arena {
 // Swap two pointers
 void mem_swap(void **mem1, void **mem2);
 
-// -- Arena methods --
+// --| Arena methods |---------------------------------------------------------------------------------------------
 
 // Initialise an arena of a given size
 Arena arena_init(U64 size);

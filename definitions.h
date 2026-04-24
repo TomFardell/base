@@ -1,10 +1,7 @@
 #ifndef DEFINITIONS_H
 #define DEFINITIONS_H
 
-#include <float.h>
 #include <inttypes.h>
-#include <stdint.h>
-#include <string.h>
 
 typedef int8_t I8;
 typedef int16_t I16;
@@ -24,41 +21,38 @@ typedef struct U64Array {
   U64 count;
 } U64Array;
 
-#define I8MIN INT8_MIN
-#define I8MAX INT8_MAX
-#define I16MIN INT16_MIN
-#define I16MAX INT16_MAX
-#define I32MIN INT32_MIN
-#define I32MAX INT32_MAX
-#define I64MIN INT64_MIN
-#define I64MAX INT64_MAX
+const extern I8 I8MIN;
+const extern I8 I8MAX;
+const extern I16 I16MIN;
+const extern I16 I16MAX;
+const extern I32 I32MIN;
+const extern I32 I32MAX;
+const extern I64 I64MIN;
+const extern I64 I64MAX;
 
-#define U8MIN 0
-#define U8MAX UINT8_MAX
-#define U16MIN 0
-#define U16MAX UINT16_MAX
-#define U32MIN 0
-#define U32MAX UINT32_MAX
-#define U64MIN 0
-#define U64MAX UINT64_MAX
+const extern U8 U8MIN;
+const extern U8 U8MAX;
+const extern U16 U16MIN;
+const extern U16 U16MAX;
+const extern U32 U32MIN;
+const extern U32 U32MAX;
+const extern U64 U64MIN;
+const extern U64 U64MAX;
 
-// -- Consistent values to represent null/error cases when returning an integer. Hopefully these values are visible
-// when debugging and don't collide with any real return values, but obviously this cannot be guaranteed, so be
-// careful when using these --
-#define I32NULL 0x8DEFDEFD
-#define I64NULL 0x8DEFDEFDEFDEFDEF
-#define U32NULL 0xFDEFDEFD
-#define U64NULL 0xFDEFDEFDEFDEFDEF
+const extern I32 I32NULL;
+const extern I64 I64NULL;
+const extern U32 U32NULL;
+const extern U64 U64NULL;
 
-#define F32MIN FLT_MIN
-#define F32MAX FLT_MAX
-#define F32EPS FLT_EPSILON
-#define F64MIN DBL_MIN
-#define F64MAX DBL_MAX
-#define F64EPS DBL_EPSILON
+const extern F32 F32MIN;
+const extern F32 F32MAX;
+const extern F32 F32EPS;
+const extern F64 F64MIN;
+const extern F64 F64MAX;
+const extern F64 F64EPS;
 
-#define PI32 3.141593
-#define PI64 3.141592653589793
+const extern F32 PI32;
+const extern F64 PI64;
 
 #define I8f PRIi8
 #define I16f PRIi16

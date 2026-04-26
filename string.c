@@ -8,14 +8,14 @@
 
 #include "memory.h"
 
-#define string_abort(message, ...)                                     \
-  do {                                                                 \
-    _string_abort(message, __FILE__, __LINE__, __func__, __VA_ARGS__); \
-  } while (0)
+// Takes same args as printf
+#define string_abort(...) statement(_string_abort(__FILE__, __LINE__, __func__, __VA_ARGS__))
 
-static void _string_abort(const char *message, const char *file, int line, const char *func, ...) {
+static void _string_abort(const char *file, int line, const char *func, ...) {
   va_list args;
   va_start(args, func);
+
+  const char *message = va_arg(args, const char *);
 
   fprintf(stderr, "\n");
   fprintf(stderr, "> ---| String error |---\n");

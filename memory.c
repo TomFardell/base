@@ -5,14 +5,14 @@
 #include <stdlib.h>
 #include <string.h>
 
-#define memory_abort(message, ...)                                     \
-  do {                                                                 \
-    _memory_abort(message, __FILE__, __LINE__, __func__, __VA_ARGS__); \
-  } while (0)
+// Takes same args as printf
+#define memory_abort(...) statement(_memory_abort(__FILE__, __LINE__, __func__, __VA_ARGS__))
 
-static void _memory_abort(const char *message, const char *file, int line, const char *func, ...) {
+static void _memory_abort(const char *file, int line, const char *func, ...) {
   va_list args;
   va_start(args, func);
+
+  const char *message = va_arg(args, const char *);
 
   fprintf(stderr, "\n");
   fprintf(stderr, "> ---| Memory error |---\n");

@@ -67,6 +67,14 @@ const extern F64 PI64;
 #define F32f "%f"
 #define F64f "%lf"
 
+#define unused(var) (void)(var)
+#define statement(s) \
+  do {               \
+    s;               \
+  } while (0)
+
+#define offset_of(type_name, member_name) ((U64)(&(((type_name *)0)->member_name)))
+
 #define KB(n) ((1 << 10) * (n))
 #define MB(n) ((1 << 20) * (n))
 #define GB(n) ((1 << 30) * (n))

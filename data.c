@@ -49,3 +49,32 @@ void linked_list_push_front(LinkNode *head, LinkNode *node) {
   head->next->prev = node;
   head->next = node;
 }
+
+LinkNode *linked_list_get_node_at_index(LinkNode *head, I64 idx) {
+  if (0 <= idx) {
+    I64 count = 0;
+    for (LinkNode *curr = head->next; curr != head; curr = curr->next) {
+      if (count == idx) {
+        return curr;
+      }
+
+      ++count;
+    }
+
+    data_abort("Index %" I64f " out of range for linked list with %" I64f " elements", idx, count);
+  } else {
+    I64 count = 0;
+    for (LinkNode *curr = head->prev; curr != head; curr = curr->prev) {
+      --count;
+
+      if (count == idx) {
+        return curr;
+      }
+    }
+
+    data_abort("Index %" I64f " out of range for linked list with %" I64f " elements", idx, -count);
+  }
+
+  // Only here to suppress compiler warning. One of the two aborts will be hit first, so this is never reached
+  return NULL;
+}

@@ -22,6 +22,8 @@ void linked_list_init(LinkNode *head);
 void linked_list_push_back(LinkNode *head, LinkNode *node);
 // Push a given node to the start linked list
 void linked_list_push_front(LinkNode *head, LinkNode *node);
+// Get the node at a given index where negative indices index from the back of the list (-1 is last element)
+LinkNode *linked_list_get_node_at_index(LinkNode *head, I64 idx);
 
 #endif  // DATA_H
 

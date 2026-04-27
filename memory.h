@@ -26,7 +26,7 @@ U8 *arena_alloc(Arena *a, U64 size, U8 align);
   ((type_name *)arena_alloc(a, (count) * sizeof(type_name), alignof(type_name)))
 
 // Allocate a single value of a given type on an arena
-#define arena_alloc_type(a, type_name) arena_alloc_array(a, type_name, 1)
+#define arena_alloc_single(a, type_name) arena_alloc_array(a, type_name, 1)
 
 // Reset a given arena without zeroing its contents
 void arena_reset(Arena *a);

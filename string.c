@@ -55,13 +55,13 @@ String string_init_substring(String str, U64 start, U64 end) {
 }
 
 String string_alloc(Arena *a, U64 len) {
-  String result = {arena_alloc(a, len * sizeof(*result.str), alignof(*result.str)), len};
+  String result = {arena_alloc_array(a, U8, len), len};
 
   return result;
 }
 
 char *string_get_cstring(Arena *a, String str) {
-  char *cstr = (char *)arena_alloc(a, str.len + 1, alignof(*cstr));
+  char *cstr = arena_alloc_array(a, char, str.len + 1);
   memcpy(cstr, str.str, str.len);
   cstr[str.len] = '\0';
 
@@ -94,7 +94,7 @@ bool string_like(String s1, String s2) {
 }
 
 String string_copy(Arena *a, String str) {
-  String result = string_init(arena_alloc(a, str.len, alignof(*result.str)), str.len);
+  String result = string_alloc(a, str.len);
 
   memcpy(result.str, str.str, str.len);
 
@@ -102,7 +102,7 @@ String string_copy(Arena *a, String str) {
 }
 
 String string_append(Arena *a, String str, String suffix) {
-  String result = string_init(arena_alloc(a, str.len + suffix.len, alignof(*result.str)), str.len + suffix.len);
+  String result = string_alloc(a, str.len + suffix.len);
 
   memcpy(result.str, str.str, str.len);
   memcpy(result.str + str.len, suffix.str, suffix.len);
@@ -118,9 +118,8 @@ String string_concat(Arena *a, U64 count, ...) {
   va_list args;
   va_start(args, count);
 
-  U64 strings_size = count * sizeof(String);
-  Arena strings_arena = arena_init(strings_size);
-  String *strings = (String *)arena_alloc(&strings_arena, strings_size, alignof(*strings));
+  Arena strings_arena = arena_init(count * sizeof(String));
+  String *strings = arena_alloc_array(&strings_arena, String, count);
 
   for (U64 i = 0; i < count; ++i) {
     strings[i] = va_arg(args, String);
@@ -142,7 +141,7 @@ String string_concat_arr(Arena *a, StringArray str_arr) {
     result.len += str_arr.data[i].len;
   }
 
-  result.str = arena_alloc(a, result.len, alignof(*result.str));
+  result.str = arena_alloc_array(a, U8, result.len);
 
   for (U64 i = 0, pos = 0; i < str_arr.count; pos += str_arr.data[i].len, ++i) {
     memcpy(result.str + pos, str_arr.data[i].str, str_arr.data[i].len);
@@ -155,9 +154,8 @@ String string_join(Arena *a, String delimeter, U64 count, ...) {
   va_list args;
   va_start(args, count);
 
-  U64 strings_size = count * sizeof(String);
-  Arena strings_arena = arena_init(strings_size);
-  String *strings = (String *)arena_alloc(&strings_arena, strings_size, alignof(*strings));
+  Arena strings_arena = arena_init(count * sizeof(String));
+  String *strings = arena_alloc_array(&strings_arena, String, count);
 
   for (U64 i = 0; i < count; ++i) {
     strings[i] = va_arg(args, String);
@@ -183,7 +181,7 @@ String string_join_arr(Arena *a, String delimeter, StringArray str_arr) {
     result.len += str_arr.data[i].len;
   }
 
-  result.str = arena_alloc(a, result.len, alignof(result.str));
+  result.str = arena_alloc_array(a, U8, result.len);
 
   U64 pos = 0;
   for (U64 i = 0; i < str_arr.count - 1; ++i) {
@@ -300,7 +298,7 @@ U64 string_find_first(String str, String substr) {
 
 U64Array string_find_all(Arena *a, String str, String substr) {
   // Get the pointer to where the data will be allocated without actually making an allocation
-  U64Array result = {(U64 *)arena_alloc(a, 0, alignof(*result.data)), 0};
+  U64Array result = {arena_alloc_array(a, U64, 0), 0};
 
   if ((substr.len == 0) || (str.len < substr.len)) {
     return result;
@@ -310,7 +308,7 @@ U64Array string_find_all(Arena *a, String str, String substr) {
   for (U64 i = 0; i < str.len - substr.len + 1; ++i) {
     if (mem_equals(str.str + i, substr.str, substr.len)) {
       // Since we don't use the arena for anything else, we can assume the data will be allocated in a block
-      arena_alloc(a, sizeof(*result.data), alignof(*result.data));
+      arena_alloc_single(a, U64);
       result.data[result.count++] = i;
     }
   }
@@ -320,20 +318,20 @@ U64Array string_find_all(Arena *a, String str, String substr) {
 
 StringArray string_split(Arena *a, String str, String delimeter) {
   if (delimeter.len == 0) {
-    StringArray result = {(String *)arena_alloc(a, sizeof(*result.data), alignof(*result.data)), 1};
+    StringArray result = {arena_alloc_single(a, String), 1};
     result.data[0] = string_copy(a, str);
 
     return result;
   }
 
   // Get the pointer to where the strings will be allocated without actually making an allocation
-  StringArray result = {(String *)arena_alloc(a, 0, alignof(*result.data)), 0};
+  StringArray result = {arena_alloc_array(a, String, 0), 0};
 
   for (U64 i = 0, curr_str_len = 0; i <= str.len; ++i) {
     if ((i == str.len) || string_equals(string_init(str.str + i, delimeter.len), delimeter)) {
       if (curr_str_len > 0) {
         // Since we don't use the arena for anything else, we can assume the strings will be allocated in a block
-        arena_alloc(a, sizeof(*result.data), alignof(*result.data));
+        arena_alloc_single(a, String);
         result.data[result.count++] = string_init_substring(str, i - curr_str_len, i);
       }
 

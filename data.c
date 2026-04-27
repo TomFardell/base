@@ -30,7 +30,7 @@ LinkNode link_node_init(LinkNode *next, LinkNode *prev) {
   return (LinkNode){next, prev};
 }
 
-void _linked_list_init(LinkNode *head) {
+void linked_list_init(LinkNode *head) {
   *head = link_node_init(head, head);
 }
 

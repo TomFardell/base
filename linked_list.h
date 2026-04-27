@@ -9,8 +9,6 @@ typedef struct I32Node {
   LinkNode node;
 } I32Node;
 
-#define node_init(data_name, data_value) {.data_name = data_value}
-
 #endif  // LINKED_LIST_H
 
 // vim: filetype=c :

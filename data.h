@@ -11,16 +11,12 @@ typedef struct LinkNode {
 // Initialise a new link node given pointers to next and previous nodes
 LinkNode link_node_init(LinkNode *next, LinkNode *prev);
 
-// Get the data associated with a given link node given that the link node is a member of a specified type
-#define link_node_get_data(node, type_name, member_name) \
+// Get the container node for a given link node, given the link node is a specified member of a specified type
+#define link_node_get_container_node(node, type_name, member_name) \
   ((type_name *)((U64)(node) - offset_of(type_name, member_name)))
 
-// Initialise a linked list with a given identifier name for the head
-#define linked_list_init(name) \
-  LinkNode name;               \
-  _linked_list_init(&name)
 // Initialise a given link node to be the head of a new linked list
-void _linked_list_init(LinkNode *head);
+void linked_list_init(LinkNode *head);
 
 // Push a given node to the end of linked list
 void linked_list_push_back(LinkNode *head, LinkNode *node);

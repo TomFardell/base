@@ -30,6 +30,15 @@ LinkNode link_node_init(LinkNode *next, LinkNode *prev) {
   return (LinkNode){next, prev};
 }
 
+void link_node_remove_from_linked_list(LinkNode *node) {
+  (node->next)->prev = node->prev;
+  (node->prev)->next = node->next;
+
+  // Poison this node's next and prev
+  node->next = NULL;
+  node->prev = NULL;
+}
+
 void linked_list_init(LinkNode *head) {
   *head = link_node_init(head, head);
 }
@@ -77,4 +86,10 @@ LinkNode *linked_list_get_node_at_index(LinkNode *head, I64 idx) {
 
   // Only here to suppress compiler warning. One of the two aborts will be hit first, so this is never reached
   return NULL;
+}
+
+void linked_list_remove_at_index(LinkNode *head, I64 idx) {
+  LinkNode *node = linked_list_get_node_at_index(head, idx);
+
+  link_node_remove_from_linked_list(node);
 }

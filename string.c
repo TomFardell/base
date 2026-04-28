@@ -248,7 +248,7 @@ String string_format(Arena *a, const char *format, ...) {
   String result = string_alloc(a, size_required + 1);  // Allocate an extra byte for the null terminator
   vsnprintf((char *)result.str, result.len, format, args);
   arena_pop(a, 1);  // Pop the null terminator, since this is unused
-  result.len--;
+  --result.len;
 
   va_end(args);
 

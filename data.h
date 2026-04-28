@@ -15,6 +15,9 @@ LinkNode link_node_init(LinkNode *next, LinkNode *prev);
 #define link_node_get_container_node(node, type_name, member_name) \
   ((type_name *)((U64)(node) - offset_of(type_name, member_name)))
 
+// Remove a given node from its linked list
+void link_node_remove_from_linked_list(LinkNode *node);
+
 // Initialise a given link node to be the head of a new linked list
 void linked_list_init(LinkNode *head);
 
@@ -22,8 +25,18 @@ void linked_list_init(LinkNode *head);
 void linked_list_push_back(LinkNode *head, LinkNode *node);
 // Push a given node to the start linked list
 void linked_list_push_front(LinkNode *head, LinkNode *node);
-// Get the node at a given index where negative indices index from the back of the list (-1 is last element)
+
+// NOTE: For methods that take an index, can pass a negative index to start indexing from the back of the list. For
+// example, the last element would have index -1
+
+// Get the node at a given index
 LinkNode *linked_list_get_node_at_index(LinkNode *head, I64 idx);
+// Get the container node at a given index in a linked list
+#define link_node_get_container_node_at_index(head, idx, type_name, member_name) \
+  link_node_get_container_node(linked_list_get_node_at_index(head, idx), type_name, member_name)
+
+// Remove the node at a given index from a linked list
+void linked_list_remove_at_index(LinkNode *head, I64 idx);
 
 #endif  // DATA_H
 

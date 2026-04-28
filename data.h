@@ -1,6 +1,7 @@
 #ifndef DATA_H
 #define DATA_H
 
+#include "definitions.h"
 #include "memory.h"
 
 typedef struct LinkNode {
@@ -34,6 +35,8 @@ LinkNode *linked_list_get_node_at_index(LinkNode *head, I64 idx);
 // Get the container node at a given index in a linked list
 #define link_node_get_container_node_at_index(head, idx, type_name, member_name) \
   link_node_get_container_node(linked_list_get_node_at_index(head, idx), type_name, member_name)
+// Get the number of elements in a linked list
+U64 linked_list_get_length(LinkNode *head);
 
 // Remove the node at a given index from a linked list
 void linked_list_remove_at_index(LinkNode *head, I64 idx);

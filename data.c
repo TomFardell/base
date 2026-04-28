@@ -88,6 +88,16 @@ LinkNode *linked_list_get_node_at_index(LinkNode *head, I64 idx) {
   return NULL;
 }
 
+U64 linked_list_get_length(LinkNode *head) {
+  U64 count = 0;
+
+  for (LinkNode *curr = head->next; curr != head; curr = curr->next) {
+    ++count;
+  }
+
+  return count;
+}
+
 void linked_list_remove_at_index(LinkNode *head, I64 idx) {
   LinkNode *node = linked_list_get_node_at_index(head, idx);
 

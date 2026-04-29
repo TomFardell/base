@@ -1,4 +1,8 @@
-// Single file containing all implementations
+/*------*/
+/* Base */
+/*---------------------------------------------------------------------------------------------------------------*/
+// Single file containing all implementations. Only this file needs to be built.
+/*---------------------------------------------------------------------------------------------------------------*/
 
 #include "data.c"
 #include "definitions.c"

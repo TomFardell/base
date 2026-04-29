@@ -1,3 +1,8 @@
+/*--------*/
+/* String */
+/*---------------------------------------------------------------------------------------------------------------*/
+// This module contains a number of simple types and macros, as well as some useful contants.
+/*---------------------------------------------------------------------------------------------------------------*/
 #ifndef DEFINITIONS_H
 #define DEFINITIONS_H
 
@@ -15,11 +20,6 @@ typedef uint64_t U64;
 
 typedef float F32;
 typedef double F64;
-
-typedef struct U64Array {
-  U64 *data;
-  U64 count;
-} U64Array;
 
 const extern I8 I8MIN;
 const extern I8 I8MAX;

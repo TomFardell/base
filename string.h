@@ -1,10 +1,22 @@
+/*--------*/
+/* String */
+/*---------------------------------------------------------------------------------------------------------------*/
+// This module contains a number of methods around strings. In particular, I am using a length-based approach for
+// storing strings, rather than null-terminating them.
+//
+// Strings should be thought of as immutable for the most part. Their underlying data will typically be stored
+// either on the heap in an arena, or as string literals. In general, methods taking an arena will allocate their
+// result on that arena.
+//
+// To print these strings, there is a method to convert back to a null-terminated C-style strings.
+/*---------------------------------------------------------------------------------------------------------------*/
 #ifndef STRING_H
 #define STRING_H
 
 #include <stdarg.h>
 #include <stdbool.h>
 
-#include "data.h"
+#include "compound_types.h"
 #include "definitions.h"
 #include "memory.h"
 
@@ -19,8 +31,6 @@ typedef struct StringArray {
 } StringArray;
 
 #define string_literal(cstr_lit) (String){(U8 *)cstr_lit, (sizeof cstr_lit) - 1}
-
-// NOTE: Methods taking an arena allocate their result on that arena
 
 // Get a string given a memory location and length
 String string_init(U8 *str, U64 len);

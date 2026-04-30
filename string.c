@@ -346,3 +346,35 @@ StringArray string_split(Arena *a, String str, String delimeter) {
 
   return result;
 }
+
+void string_builder_add_string(Arena *a, LinkNode *sb_head, String str) {
+  StringNode *string_node = arena_alloc_single(a, StringNode);
+  string_node->data = str;
+  linked_list_push_back(sb_head, &(string_node->node));
+}
+
+String string_builder_pop(LinkNode *sb_head) {
+  StringNode *last_string_node = linked_list_get_container_node_at_index(sb_head, -1, StringNode, node);
+  linked_list_remove_at_index(sb_head, -1);
+  return last_string_node->data;
+}
+
+String string_builder_get_string(Arena *a, LinkNode *sb_head) {
+  String result = {0};
+
+  for (LinkNode *curr = sb_head->next; curr != sb_head; curr = curr->next) {
+    result.len += link_node_get_container_node(curr, StringNode, node)->data.len;
+  }
+
+  result.str = arena_alloc_array(a, U8, result.len);
+
+  U64 pos = 0;
+  for (LinkNode *curr = sb_head->next; curr != sb_head; curr = curr->next) {
+    String curr_string = link_node_get_container_node(curr, StringNode, node)->data;
+    memcpy(result.str + pos, curr_string.str, curr_string.len);
+
+    pos += curr_string.len;
+  }
+
+  return result;
+}

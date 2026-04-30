@@ -49,8 +49,8 @@ typedef struct LinkNode {
 LinkNode link_node_init(LinkNode *next, LinkNode *prev);
 
 // Get the container node for a given link node, given the link node is a specified member of a specified type
-#define link_node_get_container_node(node, type_name, member_name) \
-  ((type_name *)((U64)(node) - offset_of(type_name, member_name)))
+#define link_node_get_container_node(node_address, container_type_name, container_link_node_member_name) \
+  ((container_type_name *)((U64)(node_address) - offset_of(container_type_name, container_link_node_member_name)))
 
 // Remove a given node from its linked list
 void link_node_remove_from_linked_list(LinkNode *node);
@@ -69,8 +69,10 @@ void linked_list_push_front(LinkNode *head, LinkNode *node);
 // Get the node at a given index
 LinkNode *linked_list_get_node_at_index(LinkNode *head, I64 idx);
 // Get the container node at a given index in a linked list
-#define link_node_get_container_node_at_index(head, idx, type_name, member_name) \
-  link_node_get_container_node(linked_list_get_node_at_index(head, idx), type_name, member_name)
+#define linked_list_get_container_node_at_index(head_address, idx, container_type_name,               \
+                                                container_link_node_member_name)                      \
+  link_node_get_container_node(linked_list_get_node_at_index(head_address, idx), container_type_name, \
+                               container_link_node_member_name)
 // Get the number of elements in a linked list
 U64 linked_list_get_length(LinkNode *head);
 

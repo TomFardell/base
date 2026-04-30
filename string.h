@@ -9,6 +9,11 @@
 // result on that arena.
 //
 // To print these strings, there is a method to convert back to a null-terminated C-style strings.
+//
+// String builders are just linked lists containing a sequence of strings. This allows for more memory efficient
+// construction of a string built from concatenating a lot of other strings. Doing this using concats would
+// allocate the resulting string after each concatenation, so using a string builder should be preferred when the
+// alternative would be numerous calls of concat/append.
 /*---------------------------------------------------------------------------------------------------------------*/
 #ifndef STRING_H
 #define STRING_H
@@ -17,6 +22,7 @@
 #include <stdbool.h>
 
 #include "compound_types.h"
+#include "data.h"
 #include "definitions.h"
 #include "memory.h"
 
@@ -29,6 +35,11 @@ typedef struct StringArray {
   String *data;
   U64 count;
 } StringArray;
+
+typedef struct StringNode {
+  String data;
+  LinkNode node;
+} StringNode;
 
 #define string_literal(cstr_lit) (String){(U8 *)cstr_lit, (sizeof cstr_lit) - 1}
 
@@ -43,7 +54,7 @@ String string_init_substring(String str, U64 start, U64 end);
 // Allocate a new string on a given arena
 String string_alloc(Arena *a, U64 len);
 
-// Get the null-terminated equiavalent of a String
+// Get the null-terminated equivalent of a string for printing
 char *string_get_cstring(Arena *a, String str);
 
 // Check whether two strings are equal
@@ -85,6 +96,13 @@ U64Array string_find_all(Arena *a, String str, String substr);
 
 // Split a string into an array on a given delimeter
 StringArray string_split(Arena *a, String str, String delimeter);
+
+// Add a string to the end of a string builder
+void string_builder_add_string(Arena *a, LinkNode *sb_head, String str);
+// Remove the last string from a string builder
+String string_builder_pop(LinkNode *sb_head);
+// Flatten a string builder into a single string
+String string_builder_get_string(Arena *a, LinkNode *sb_head);
 
 #endif  // STRING_H
 

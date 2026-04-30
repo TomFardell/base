@@ -3,25 +3,32 @@
 /*---------------------------------------------------------------------------------------------------------------*/
 // This module contains the repetititve definitions of a bunch of useful structs, as outlined below.
 //
-// Array with pointer to first element and number of elements:
-// typedef struct <Type>Array {
-//   <Type> *data;
-//   U64 count;
-// } <Type>Array;
+// Array with pointer to first element and element count:
+// +----------------------+
+// | <Type>Array my_array |
+// +----------------------+
+// | <Type> *data         |
+// | U64 count            |
+// +----------------------+
 //
 // Node containing data and a link node:
-// typedef struct <Type>Node {
-//   <Type> *data;
-//   U64 count;
-// } <Type>Array;
+// +--------------------+
+// | <Type>Node my_node |
+// +--------------------+
+// | <Type> data        |
+// | LinkNode node      |
+// +--------------------+
 //
-// Vector containing (2-4) elements of that type with (x,y,z,w) indexing:
-// typedef struct <Type>Vec<Count> {
-//   <Type> x;  // Vec4, Vec3, Vec2
-//   <Type> y;  // Vec4, Vec3, Vec2
-//   <Type> z;  // Vec4, Vec3
-//   <Type> w;  // Vec4
-// } <Type>Vec<Count>;
+// Vector containing (2-4) elements with (x,y,z,w) indexing:
+// +-------------------+     +-------------------+     +-------------------+
+// | <Type>Vec2 my_vec |     | <Type>Vec3 my_vec |     | <Type>Vec4 my_vec |
+// +-------------------+     +-------------------+     +-------------------+
+// | <Type> x          |     | <Type> x          |     | <Type> x          |
+// | <Type> y          |     | <Type> y          |     | <Type> y          |
+// +-------------------+     | <Type> z          |     | <Type> z          |
+//                           +-------------------+     | <Type> w          |
+//                                                     +-------------------+
+//
 /*---------------------------------------------------------------------------------------------------------------*/
 
 #ifndef COMPOUND_TYPES_H

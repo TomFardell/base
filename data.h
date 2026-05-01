@@ -33,6 +33,9 @@
 //                          +--------------------+       +--------------------+
 //
 // In particular, the head does not contain any data.
+//
+// Some methods allow for indexing of elements of a linked list. These can take a negative index, which will index
+// from the back of the list, i.e. an index of -1 corresponds to the last element.
 /*---------------------------------------------------------------------------------------------------------------*/
 #ifndef DATA_H
 #define DATA_H
@@ -52,6 +55,10 @@ LinkNode link_node_init(LinkNode *next, LinkNode *prev);
 #define link_node_get_container_node(node_address, container_type_name, container_link_node_member_name) \
   ((container_type_name *)((U64)(node_address) - offset_of(container_type_name, container_link_node_member_name)))
 
+// Insert a link node after a given node
+void link_node_insert_after(LinkNode *after, LinkNode *node);
+// Insert a link node before a given node
+void link_node_insert_before(LinkNode *before, LinkNode *node);
 // Remove a given node from its linked list
 void link_node_remove_from_linked_list(LinkNode *node);
 
@@ -62,9 +69,8 @@ void linked_list_init(LinkNode *head);
 void linked_list_push_back(LinkNode *head, LinkNode *node);
 // Push a given node to the start linked list
 void linked_list_push_front(LinkNode *head, LinkNode *node);
-
-// NOTE: For methods that take an index, can pass a negative index to start indexing from the back of the list. For
-// example, the last element would have index -1
+// Insert a node into a linked list so that that node's index becomes the index passed
+void linked_list_insert_at_index(LinkNode *head, I64 idx, LinkNode *node);
 
 // Get the node at a given index
 LinkNode *linked_list_get_node_at_index(LinkNode *head, I64 idx);

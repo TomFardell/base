@@ -30,6 +30,22 @@ LinkNode link_node_init(LinkNode *next, LinkNode *prev) {
   return (LinkNode){next, prev};
 }
 
+void link_node_insert_after(LinkNode *after, LinkNode *node) {
+  node->next = after->next;
+  node->prev = after;
+
+  after->next->prev = node;
+  after->next = node;
+}
+
+void link_node_insert_before(LinkNode *before, LinkNode *node) {
+  node->next = before;
+  node->prev = before->prev;
+
+  before->prev->next = node;
+  before->prev = node;
+}
+
 void link_node_remove_from_linked_list(LinkNode *node) {
   (node->next)->prev = node->prev;
   (node->prev)->next = node->next;
@@ -44,19 +60,19 @@ void linked_list_init(LinkNode *head) {
 }
 
 void linked_list_push_back(LinkNode *head, LinkNode *node) {
-  node->next = head;
-  node->prev = head->prev;
-
-  head->prev->next = node;
-  head->prev = node;
+  link_node_insert_before(head, node);
 }
 
 void linked_list_push_front(LinkNode *head, LinkNode *node) {
-  node->next = head->next;
-  node->prev = head;
+  link_node_insert_after(head, node);
+}
 
-  head->next->prev = node;
-  head->next = node;
+void linked_list_insert_at_index(LinkNode *head, I64 idx, LinkNode *node) {
+  if (0 <= idx) {
+    link_node_insert_before(linked_list_get_node_at_index(head, idx), node);
+  } else {
+    link_node_insert_after(linked_list_get_node_at_index(head, idx), node);
+  }
 }
 
 LinkNode *linked_list_get_node_at_index(LinkNode *head, I64 idx) {

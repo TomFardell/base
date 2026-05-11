@@ -296,43 +296,47 @@ U64 string_find_first(String str, String substr) {
   return U64NULL;
 }
 
-U64Array string_find_all(Arena *a, String str, String substr) {
-  // Get the pointer to where the data will be allocated without actually making an allocation
-  U64Array result = {arena_alloc_array(a, U64, 0), 0};
+LinkNode *string_find_all(Arena *a, String str, String substr) {
+  LinkNode *head = arena_alloc_single(a, LinkNode);
+  linked_list_init(head);
 
   if ((substr.len == 0) || (str.len < substr.len)) {
-    return result;
+    return head;
   }
 
-  // Specifically don't skip over the substr
+  // When we find a substring, don't skip past it. I.e. ababa contains 2 instances of aba
   for (U64 i = 0; i < str.len - substr.len + 1; ++i) {
     if (mem_equals(str.str + i, substr.str, substr.len)) {
-      // Since we don't use the arena for anything else, we can assume the data will be allocated in a block
-      arena_alloc_single(a, U64);
-      result.data[result.count++] = i;
+      U64Node *node = arena_alloc_single(a, U64Node);
+      node->data = i;
+
+      linked_list_push_back(head, &(node->node));
     }
   }
 
-  return result;
+  return head;
 }
 
-StringArray string_split(Arena *a, String str, String delimeter) {
+LinkNode *string_split(Arena *a, String str, String delimeter) {
+  LinkNode *head = arena_alloc_single(a, LinkNode);
+  linked_list_init(head);
+
   if (delimeter.len == 0) {
-    StringArray result = {arena_alloc_single(a, String), 1};
-    result.data[0] = string_copy(a, str);
+    StringNode *node = arena_alloc_single(a, StringNode);
+    node->data = string_copy(a, str);
 
-    return result;
+    linked_list_push_back(head, &(node->node));
+
+    return head;
   }
-
-  // Get the pointer to where the strings will be allocated without actually making an allocation
-  StringArray result = {arena_alloc_array(a, String, 0), 0};
 
   for (U64 i = 0, curr_str_len = 0; i <= str.len; ++i) {
     if ((i == str.len) || string_equals(string_init(str.str + i, delimeter.len), delimeter)) {
       if (curr_str_len > 0) {
-        // Since we don't use the arena for anything else, we can assume the strings will be allocated in a block
-        arena_alloc_single(a, String);
-        result.data[result.count++] = string_init_substring(str, i - curr_str_len, i);
+        StringNode *node = arena_alloc_single(a, StringNode);
+        node->data = string_init_substring(str, i - curr_str_len, i);
+
+        linked_list_push_back(head, &(node->node));
       }
 
       curr_str_len = 0;
@@ -344,7 +348,7 @@ StringArray string_split(Arena *a, String str, String delimeter) {
     ++curr_str_len;
   }
 
-  return result;
+  return head;
 }
 
 void string_builder_add_string(Arena *a, LinkNode *sb_head, String str) {

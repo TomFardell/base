@@ -92,10 +92,10 @@ bool string_contains(String str, String substr);
 // Get the index of the start of the first occurrence of a substring in a string
 U64 string_find_first(String str, String substr);
 // Get the indices of the start of all occurrence of a substring in a string
-U64Array string_find_all(Arena *a, String str, String substr);
+LinkNode *string_find_all(Arena *a, String str, String substr);
 
-// Split a string into an array on a given delimeter
-StringArray string_split(Arena *a, String str, String delimeter);
+// Split a string into a linked list of tokens on a given delimeter
+LinkNode *string_split(Arena *a, String str, String delimeter);
 
 // Add a string to the end of a string builder
 void string_builder_add_string(Arena *a, LinkNode *sb_head, String str);

@@ -363,7 +363,7 @@ String string_builder_pop(LinkNode *sb_head) {
   return last_string_node->data;
 }
 
-String string_builder_get_string(Arena *a, LinkNode *sb_head) {
+String string_builder_get_string(Arena *a, const LinkNode *sb_head) {
   String result = {0};
 
   for (LinkNode *curr = sb_head->next; curr != sb_head; curr = curr->next) {

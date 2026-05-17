@@ -13,6 +13,7 @@
 #ifndef MEMORY_H
 #define MEMORY_H
 
+#include <stdalign.h>
 #include <stdlib.h>
 
 #include "definitions.h"
@@ -32,11 +33,9 @@ void mem_swap(void **mem1, void **mem2);
 Arena arena_init(U64 size);
 // Allocate a block of memory inside an arena, aligning the start of the block with a given alignment
 U8 *arena_alloc(Arena *a, U64 size, U8 align);
-
 // Allocate an array of values of a given type on an arena
 #define arena_alloc_array(a, type_name, count) \
   ((type_name *)arena_alloc(a, (count) * sizeof(type_name), alignof(type_name)))
-
 // Allocate a single value of a given type on an arena
 #define arena_alloc_single(a, type_name) arena_alloc_array(a, type_name, 1)
 

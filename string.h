@@ -102,7 +102,7 @@ void string_builder_add_string(Arena *a, LinkNode *sb_head, String str);
 // Remove the last string from a string builder
 String string_builder_pop(LinkNode *sb_head);
 // Flatten a string builder into a single string
-String string_builder_get_string(Arena *a, LinkNode *sb_head);
+String string_builder_get_string(Arena *a, const LinkNode *sb_head);
 
 #endif  // STRING_H
 

@@ -75,7 +75,7 @@ void linked_list_insert_at_index(LinkNode *head, I64 idx, LinkNode *node) {
   }
 }
 
-LinkNode *linked_list_get_node_at_index(LinkNode *head, I64 idx) {
+LinkNode *linked_list_get_node_at_index(const LinkNode *head, I64 idx) {
   if (0 <= idx) {
     I64 count = 0;
     for (LinkNode *curr = head->next; curr != head; curr = curr->next) {
@@ -104,7 +104,7 @@ LinkNode *linked_list_get_node_at_index(LinkNode *head, I64 idx) {
   return NULL;
 }
 
-U64 linked_list_get_length(LinkNode *head) {
+U64 linked_list_get_length(const LinkNode *head) {
   U64 count = 0;
 
   for (LinkNode *curr = head->next; curr != head; curr = curr->next) {

@@ -73,14 +73,14 @@ void linked_list_push_front(LinkNode *head, LinkNode *node);
 void linked_list_insert_at_index(LinkNode *head, I64 idx, LinkNode *node);
 
 // Get the node at a given index
-LinkNode *linked_list_get_node_at_index(LinkNode *head, I64 idx);
+LinkNode *linked_list_get_node_at_index(const LinkNode *head, I64 idx);
 // Get the container node at a given index in a linked list
 #define linked_list_get_container_node_at_index(head_address, idx, container_type_name,               \
                                                 container_link_node_member_name)                      \
   link_node_get_container_node(linked_list_get_node_at_index(head_address, idx), container_type_name, \
                                container_link_node_member_name)
 // Get the number of elements in a linked list
-U64 linked_list_get_length(LinkNode *head);
+U64 linked_list_get_length(const LinkNode *head);
 
 // Remove the node at a given index from a linked list
 void linked_list_remove_at_index(LinkNode *head, I64 idx);

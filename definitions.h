@@ -64,8 +64,8 @@ const extern F64 PI64;
 #define U32f PRIu32
 #define U64f PRIu64
 
-#define F32f "%f"
-#define F64f "%lf"
+#define F32f "f"
+#define F64f "lf"
 
 #define unused(var) (void)(var)
 #define statement(s) \

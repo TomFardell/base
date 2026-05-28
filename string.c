@@ -4,6 +4,7 @@
 #include <stdarg.h>
 #include <stdbool.h>
 #include <stdio.h>
+#include <stdnoreturn.h>
 #include <string.h>
 
 #include "memory.h"
@@ -11,7 +12,7 @@
 // Takes same args as printf
 #define string_abort(...) statement(_string_abort(__FILE__, __LINE__, __func__, __VA_ARGS__))
 
-static void _string_abort(const char *file, int line, const char *func, ...) {
+static noreturn void _string_abort(const char *file, int line, const char *func, ...) {
   va_list args;
   va_start(args, func);
 
@@ -30,16 +31,16 @@ static void _string_abort(const char *file, int line, const char *func, ...) {
   exit(EXIT_FAILURE);
 }
 
-String string_init(U8 *str, U64 len) {
+String string_init(const char *str, U64 len) {
   return (String){str, len};
 }
 
-String string_init_range(U8 *start, U8 *end) {
+String string_init_range(const char *start, const char *end) {
   return string_init(start, end - start);
 }
 
-String string_init_cstring(char *cstr) {
-  return string_init((U8 *)cstr, strlen(cstr));
+String string_init_cstring(const char *cstr) {
+  return string_init(cstr, strlen(cstr));
 }
 
 String string_init_substring(String str, U64 start, U64 end) {
@@ -52,12 +53,6 @@ String string_init_substring(String str, U64 start, U64 end) {
   }
 
   return string_init_range(str.str + start, str.str + end);
-}
-
-String string_alloc(Arena *a, U64 len) {
-  String result = {arena_alloc_array(a, U8, len), len};
-
-  return result;
 }
 
 char *string_get_cstring(Arena *a, String str) {
@@ -94,20 +89,19 @@ bool string_like(String s1, String s2) {
 }
 
 String string_copy(Arena *a, String str) {
-  String result = string_alloc(a, str.len);
+  char *result_str = arena_alloc_array(a, char, str.len);
+  memcpy(result_str, str.str, str.len);
 
-  memcpy(result.str, str.str, str.len);
-
-  return result;
+  return string_init(result_str, str.len);
 }
 
 String string_append(Arena *a, String str, String suffix) {
-  String result = string_alloc(a, str.len + suffix.len);
+  char *result_str = arena_alloc_array(a, char, str.len + suffix.len);
 
-  memcpy(result.str, str.str, str.len);
-  memcpy(result.str + str.len, suffix.str, suffix.len);
+  memcpy(result_str, str.str, str.len);
+  memcpy(result_str + str.len, suffix.str, suffix.len);
 
-  return result;
+  return string_init(result_str, str.len + suffix.len);
 }
 
 String string_prepend(Arena *a, String str, String prefix) {
@@ -135,19 +129,19 @@ String string_concat(Arena *a, U64 count, ...) {
 }
 
 String string_concat_arr(Arena *a, StringArray str_arr) {
-  String result = {0};
+  U64 result_len = 0;
 
   for (U64 i = 0; i < str_arr.count; ++i) {
-    result.len += str_arr.data[i].len;
+    result_len += str_arr.data[i].len;
   }
 
-  result.str = arena_alloc_array(a, U8, result.len);
+  char *result_str = arena_alloc_array(a, char, result_len);
 
   for (U64 i = 0, pos = 0; i < str_arr.count; pos += str_arr.data[i].len, ++i) {
-    memcpy(result.str + pos, str_arr.data[i].str, str_arr.data[i].len);
+    memcpy(result_str + pos, str_arr.data[i].str, str_arr.data[i].len);
   }
 
-  return result;
+  return string_init(result_str, result_len);
 }
 
 String string_join(Arena *a, String delimeter, U64 count, ...) {
@@ -175,91 +169,88 @@ String string_join_arr(Arena *a, String delimeter, StringArray str_arr) {
     return string_literal("");
   }
 
-  String result = {.len = delimeter.len * (str_arr.count - 1)};
+  U64 result_len = delimeter.len * (str_arr.count - 1);
 
   for (U64 i = 0; i < str_arr.count; ++i) {
-    result.len += str_arr.data[i].len;
+    result_len += str_arr.data[i].len;
   }
 
-  result.str = arena_alloc_array(a, U8, result.len);
+  char *result_str = arena_alloc_array(a, char, result_len);
 
   U64 pos = 0;
   for (U64 i = 0; i < str_arr.count - 1; ++i) {
-    memcpy(result.str + pos, str_arr.data[i].str, str_arr.data[i].len);
+    memcpy(result_str + pos, str_arr.data[i].str, str_arr.data[i].len);
     pos += str_arr.data[i].len;
 
-    memcpy(result.str + pos, delimeter.str, delimeter.len);
+    memcpy(result_str + pos, delimeter.str, delimeter.len);
     pos += delimeter.len;
   }
 
-  memcpy(result.str + pos, str_arr.data[str_arr.count - 1].str, str_arr.data[str_arr.count - 1].len);
+  memcpy(result_str + pos, str_arr.data[str_arr.count - 1].str, str_arr.data[str_arr.count - 1].len);
 
-  return result;
+  return string_init(result_str, result_len);
 }
 
 String string_upper(Arena *a, String str) {
-  String result = string_alloc(a, str.len);
+  char *result_str = arena_alloc_array(a, char, str.len);
 
-  for (U64 i = 0; i < result.len; ++i) {
-    result.str[i] = str.str[i];
+  for (U64 i = 0; i < str.len; ++i) {
+    result_str[i] = str.str[i];
 
-    if ('a' <= result.str[i] && result.str[i] <= 'z') {
-      result.str[i] += 'A' - 'a';
+    if ('a' <= result_str[i] && result_str[i] <= 'z') {
+      result_str[i] += 'A' - 'a';
     }
   }
 
-  return result;
+  return string_init(result_str, str.len);
 }
 
 String string_lower(Arena *a, String str) {
-  String result = string_alloc(a, str.len);
+  char *result_str = arena_alloc_array(a, char, str.len);
 
-  for (U64 i = 0; i < result.len; ++i) {
-    result.str[i] = str.str[i];
+  for (U64 i = 0; i < str.len; ++i) {
+    result_str[i] = str.str[i];
 
     if ('A' <= str.str[i] && str.str[i] <= 'Z') {
-      result.str[i] = str.str[i] + 'a' - 'A';
+      result_str[i] = str.str[i] + 'a' - 'A';
     }
   }
 
-  return result;
+  return string_init(result_str, str.len);
 }
 
 String string_reverse(Arena *a, String str) {
-  String result = string_alloc(a, str.len);
+  char *result_str = arena_alloc_array(a, char, str.len);
 
   for (U64 i = 0; i < str.len; ++i) {
-    result.str[i] = str.str[str.len - i - 1];
+    result_str[i] = str.str[str.len - i - 1];
   }
 
-  return result;
+  return string_init(result_str, str.len);
 }
 
-// Would almost always be calling this with a literal format, so makes sense to have it as a cstring
 String string_format(Arena *a, const char *format, ...) {
   va_list args;
   va_start(args, format);
 
   // First determine the buffer size required before allocating anything
-  U64 size_required = vsnprintf(NULL, 0, format, args);
+  U64 result_len = vsnprintf(NULL, 0, format, args);
 
   va_start(args, format);  // Need to call this again in order to reuse the args
 
-  String result = string_alloc(a, size_required + 1);  // Allocate an extra byte for the null terminator
-  vsnprintf((char *)result.str, result.len, format, args);
-  arena_pop(a, 1);  // Pop the null terminator, since this is unused
-  --result.len;
+  char *result_str = arena_alloc_array(a, char, result_len + 1);  // Allocate an extra byte for the null terminator
+  vsnprintf(result_str, result_len + 1, format, args);
 
   va_end(args);
 
-  return result;
+  return string_init(result_str, result_len);
 }
 
 String string_remove(Arena *a, String str, String rem) {
   if ((rem.len > str.len) || (rem.len == 0)) {
     return str;
   }
-  String result = string_alloc(a, str.len);  // Max length would be if nothing is removed
+  char *result_str = arena_alloc_array(a, char, str.len);  // Max length would be if nothing is removed
 
   U64 str_i = 0, res_i = 0;
   while (str_i < str.len) {
@@ -268,14 +259,12 @@ String string_remove(Arena *a, String str, String rem) {
       continue;
     }
 
-    result.str[res_i] = str.str[str_i];
+    result_str[res_i] = str.str[str_i];
     ++str_i;
     ++res_i;
   }
 
-  arena_pop(a, str_i - res_i);  // Pop the unused bytes of the result
-  result.len = res_i;
-  return result;
+  return string_init(result_str, res_i);
 }
 
 bool string_contains(String str, String substr) {
@@ -284,11 +273,11 @@ bool string_contains(String str, String substr) {
 
 U64 string_find_first(String str, String substr) {
   if ((substr.len == 0) || (str.len < substr.len)) {
-    return str.len;
+    return U64NULL;
   }
 
   for (U64 i = 0; i < str.len - substr.len + 1; ++i) {
-    if (mem_equals(str.str + i, substr.str, substr.len)) {
+    if (string_equals(string_init(str.str + i, substr.len), string_init(substr.str, substr.len))) {
       return i;
     }
   }
@@ -300,18 +289,19 @@ LinkNode *string_find_all(Arena *a, String str, String substr) {
   LinkNode *head = arena_alloc_single(a, LinkNode);
   linked_list_init(head);
 
-  if ((substr.len == 0) || (str.len < substr.len)) {
-    return head;
-  }
-
-  // When we find a substring, don't skip past it. I.e. ababa contains 2 instances of aba
-  for (U64 i = 0; i < str.len - substr.len + 1; ++i) {
-    if (mem_equals(str.str + i, substr.str, substr.len)) {
-      U64Node *node = arena_alloc_single(a, U64Node);
-      node->data = i;
-
-      linked_list_push_back(head, &(node->node));
+  // When we find a substring, don't skip past it. I.e. ababa contains two overlapping instances of aba
+  for (U64 i = 0; i < str.len; ++i) {
+    U64 next_index = string_find_first(string_init(str.str + i, str.len - i), substr);
+    if (next_index == U64NULL) {
+      break;
     }
+
+    i += next_index;
+
+    U64Node *node = arena_alloc_single(a, U64Node);
+    node->data = i;
+
+    linked_list_push_back(head, &(node->node));
   }
 
   return head;
@@ -364,21 +354,21 @@ String string_builder_pop(LinkNode *sb_head) {
 }
 
 String string_builder_get_string(Arena *a, const LinkNode *sb_head) {
-  String result = {0};
+  U64 result_len = 0;
 
   for (LinkNode *curr = sb_head->next; curr != sb_head; curr = curr->next) {
-    result.len += link_node_get_container_node(curr, StringNode, node)->data.len;
+    result_len += link_node_get_container_node(curr, StringNode, node)->data.len;
   }
 
-  result.str = arena_alloc_array(a, U8, result.len);
+  char *result_str = arena_alloc_array(a, char, result_len);
 
   U64 pos = 0;
   for (LinkNode *curr = sb_head->next; curr != sb_head; curr = curr->next) {
     String curr_string = link_node_get_container_node(curr, StringNode, node)->data;
-    memcpy(result.str + pos, curr_string.str, curr_string.len);
+    memcpy(result_str + pos, curr_string.str, curr_string.len);
 
     pos += curr_string.len;
   }
 
-  return result;
+  return string_init(result_str, result_len);
 }

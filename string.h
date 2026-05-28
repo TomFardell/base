@@ -4,11 +4,9 @@
 // This module contains a number of methods around strings. In particular, I am using a length-based approach for
 // storing strings, rather than null-terminating them.
 //
-// Strings should be thought of as immutable for the most part. Their underlying data will typically be stored
-// either on the heap in an arena, or as string literals. In general, methods taking an arena will allocate their
-// result on that arena.
-//
-// To print these strings, there is a method to convert back to a null-terminated C-style strings.
+// Strings are immutable and cannot have their data altered after creation. In general, methods taking an arena
+// will allocate their result on that arena. To print these strings, there is a method to convert back to a
+// null-terminated C-style string.
 //
 // String builders are just linked lists containing a sequence of strings. This allows for more memory efficient
 // construction of a string built from concatenating a lot of other strings. Doing this using concats would
@@ -27,7 +25,7 @@
 #include "memory.h"
 
 typedef struct String {
-  U8 *str;
+  const char *str;
   U64 len;
 } String;
 
@@ -41,18 +39,16 @@ typedef struct StringNode {
   LinkNode node;
 } StringNode;
 
-#define string_literal(cstr_lit) (String){(U8 *)cstr_lit, (sizeof cstr_lit) - 1}
+#define string_literal(cstr_lit) (String){(const char *)cstr_lit, (sizeof cstr_lit) - 1}
 
 // Get a string given a memory location and length
-String string_init(U8 *str, U64 len);
+String string_init(const char *str, U64 len);
 // Get the string between a start location (inclusive) and an end location (exclusive)
-String string_init_range(U8 *start, U8 *end);
+String string_init_range(const char *start, const char *end);
 // Get the string equivalent of a given cstring
-String string_init_cstring(char *cstr);
+String string_init_cstring(const char *cstr);
 // Get the substring of a given string between a start index (inclusive) and an end index (exclusive)
 String string_init_substring(String str, U64 start, U64 end);
-// Allocate a new string on a given arena
-String string_alloc(Arena *a, U64 len);
 
 // Get the null-terminated equivalent of a string for printing
 char *string_get_cstring(Arena *a, String str);

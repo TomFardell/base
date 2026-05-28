@@ -3,11 +3,12 @@
 #include <stdarg.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdnoreturn.h>
 
 // Takes same args as printf
 #define data_abort(...) statement(_data_abort(__FILE__, __LINE__, __func__, __VA_ARGS__))
 
-static void _data_abort(const char *file, int line, const char *func, ...) {
+static noreturn void _data_abort(const char *file, int line, const char *func, ...) {
   va_list args;
   va_start(args, func);
 

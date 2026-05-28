@@ -3,12 +3,13 @@
 #include <stdarg.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdnoreturn.h>
 #include <string.h>
 
 // Takes same args as printf
 #define memory_abort(...) statement(_memory_abort(__FILE__, __LINE__, __func__, __VA_ARGS__))
 
-static void _memory_abort(const char *file, int line, const char *func, ...) {
+static noreturn void _memory_abort(const char *file, int line, const char *func, ...) {
   va_list args;
   va_start(args, func);
 

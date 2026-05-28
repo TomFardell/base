@@ -1,5 +1,5 @@
-/*--------*/
-/* String */
+/*-------------*/
+/* Definitions */
 /*---------------------------------------------------------------------------------------------------------------*/
 // This module contains a number of simple types and macros, as well as some useful contants.
 /*---------------------------------------------------------------------------------------------------------------*/
@@ -85,6 +85,6 @@ const extern F64 PI64;
 #define clamp_above(x, high) min(x, high)
 #define clamp_below(x, low) max(x, low)
 
-#endif  // ifndef DEFINITIONS_H
+#endif  // DEFINITIONS_H
 
 // vim: filetype=c :

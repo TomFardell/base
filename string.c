@@ -354,13 +354,17 @@ String string_builder_pop(LinkNode *sb_head) {
 }
 
 String string_builder_get_string(Arena *a, const LinkNode *sb_head) {
+  return string_init_cstring(string_builder_get_cstring(a, sb_head));
+}
+
+char *string_builder_get_cstring(Arena *a, const LinkNode *sb_head) {
   U64 result_len = 0;
 
   for (LinkNode *curr = sb_head->next; curr != sb_head; curr = curr->next) {
     result_len += link_node_get_container_node(curr, StringNode, node)->data.len;
   }
 
-  char *result_str = arena_alloc_array(a, char, result_len);
+  char *result_str = arena_alloc_array(a, char, result_len + 1);
 
   U64 pos = 0;
   for (LinkNode *curr = sb_head->next; curr != sb_head; curr = curr->next) {
@@ -370,5 +374,7 @@ String string_builder_get_string(Arena *a, const LinkNode *sb_head) {
     pos += curr_string.len;
   }
 
-  return string_init(result_str, result_len);
+  result_str[result_len] = '\0';
+
+  return result_str;
 }

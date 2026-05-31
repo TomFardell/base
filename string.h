@@ -99,6 +99,8 @@ void string_builder_add_string(Arena *a, LinkNode *sb_head, String str);
 String string_builder_pop(LinkNode *sb_head);
 // Flatten a string builder into a single string
 String string_builder_get_string(Arena *a, const LinkNode *sb_head);
+// Flatten a string builder into a single cstring
+char *string_builder_get_cstring(Arena *a, const LinkNode *sb_head);
 
 #endif  // STRING_H
 

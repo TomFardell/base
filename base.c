@@ -5,6 +5,7 @@
 /*---------------------------------------------------------------------------------------------------------------*/
 
 #include "data.c"
+#include "date.c"
 #include "definitions.c"
 #include "memory.c"
 #include "string.c"

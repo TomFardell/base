@@ -122,11 +122,11 @@ bool year_is_leap_year(Year year) {
   return ((year % 4 == 0) && ((year % 100 != 0) || (year % 400 == 0)));
 }
 
-String date_get_string(Arena *arena, Date date, DateFormat date_format, DayOfWeekFormat day_of_week_format) {
-  return string_init_cstring(date_get_cstring(arena, date, date_format, day_of_week_format));
+String date_get_string(Arena *a, Date date, DateFormat date_format, DayOfWeekFormat day_of_week_format) {
+  return string_init_cstring(date_get_cstring(a, date, date_format, day_of_week_format));
 }
 
-const char *date_get_cstring(Arena *arena, Date date, DateFormat date_format, DayOfWeekFormat day_of_week_format) {
+const char *date_get_cstring(Arena *a, Date date, DateFormat date_format, DayOfWeekFormat day_of_week_format) {
   Arena sb_arena = arena_init(256);
   LinkNode sb_head;
   linked_list_init(&sb_head);
@@ -160,7 +160,7 @@ const char *date_get_cstring(Arena *arena, Date date, DateFormat date_format, Da
     string_builder_add_string(&sb_arena, &sb_head, year_string);
   }
 
-  const char *result = string_builder_get_cstring(arena, &sb_head);
+  const char *result = string_builder_get_cstring(a, &sb_head);
 
   arena_free(&sb_arena);
 

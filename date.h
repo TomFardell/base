@@ -94,9 +94,9 @@ Year date_get_year(Date date);
 bool year_is_leap_year(Year year);
 
 // Get the string representation of a given date with a specified format
-String date_get_string(Arena *arena, Date date, DateFormat date_format, DayOfWeekFormat day_of_week_format);
+String date_get_string(Arena *a, Date date, DateFormat date_format, DayOfWeekFormat day_of_week_format);
 // Get the cstring representation of a given date with a specified format
-const char *date_get_cstring(Arena *arena, Date date, DateFormat date_format, DayOfWeekFormat day_of_week_format);
+const char *date_get_cstring(Arena *a, Date date, DateFormat date_format, DayOfWeekFormat day_of_week_format);
 
 #endif  // ifndef DATE_H
 

@@ -21,9 +21,9 @@ const U32 U32MAX = UINT32_MAX;
 const U64 U64MIN = 0;
 const U64 U64MAX = UINT64_MAX;
 
-// -- Consistent values to represent null/error cases when returning an integer. Hopefully these values are visible
+// Consistent values to represent null/error cases when returning an integer. Hopefully these values are visible
 // when debugging and don't collide with any real return values, but obviously this cannot be guaranteed, so be
-// careful when using these --
+// careful when using these
 const I32 I32NULL = 0x8DEFDEFD;
 const I64 I64NULL = 0x8DEFDEFDEFDEFDEF;
 const U32 U32NULL = 0xFDEFDEFD;

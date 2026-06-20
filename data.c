@@ -100,9 +100,6 @@ LinkNode *linked_list_get_node_at_index(const LinkNode *head, I64 idx) {
 
     data_abort("Index %" I64f " out of range for linked list with %" I64f " elements", idx, -count);
   }
-
-  // Only here to suppress compiler warning. One of the two aborts will be hit first, so this is never reached
-  return NULL;
 }
 
 U64 linked_list_get_length(const LinkNode *head) {

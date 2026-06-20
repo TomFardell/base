@@ -14,7 +14,6 @@
 #define MEMORY_H
 
 #include <stdalign.h>
-#include <stdlib.h>
 
 #include "definitions.h"
 

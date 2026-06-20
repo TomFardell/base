@@ -41,7 +41,6 @@
 #define DATA_H
 
 #include "definitions.h"
-#include "memory.h"
 
 typedef struct LinkNode {
   struct LinkNode *next;

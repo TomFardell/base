@@ -4,9 +4,13 @@
 #include <stdarg.h>
 #include <stdbool.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <stdnoreturn.h>
 #include <string.h>
 
+#include "compound_types.h"
+#include "data.h"
+#include "definitions.h"
 #include "memory.h"
 
 // Takes same args as printf

@@ -38,6 +38,9 @@ typedef struct StringNode {
   LinkNode node;
 } StringNode;
 
+#define Stringf ".*s"
+#define stringf_args(s) (int)((s).len), (s).str
+
 #define string_literal(cstr_lit) (String){(const char *)cstr_lit, (sizeof cstr_lit) - 1}
 
 // Get a string given a memory location and length

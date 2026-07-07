@@ -85,6 +85,23 @@ const extern F64 PI64;
 #define clamp_above(x, high) min(x, high)
 #define clamp_below(x, low) max(x, low)
 
+#define norm(x) (((x) > 0) ? (x) : (0 - (x)))
+#define norm_dist(x, y) norm((x) - (y))
+
+#define F32_eq(x, y) (norm_dist(x, y) < F32EPS)
+#define F32_lt(x, y) ((x) < (y))
+#define F32_leq(x, y) (F32_lt(x, y) || F32_eq(x, y))
+#define F32_gt(x, y) ((x) > (y))
+#define F32_geq(x, y) (F32_gt(x, y) || F32_eq(x, y))
+#define F32_neq(x, y) (!F32_eq(x, y))
+
+#define F64_eq(x, y) (norm_dist(x, y) < F64EPS)
+#define F64_lt(x, y) ((x) < (y))
+#define F64_leq(x, y) (F64_lt(x, y) || F64_eq(x, y))
+#define F64_gt(x, y) ((x) > (y))
+#define F64_geq(x, y) (F64_gt(x, y) || F64_eq(x, y))
+#define F64_neq(x, y) (!F64_eq(x, y))
+
 #endif  // DEFINITIONS_H
 
 // vim: filetype=c :

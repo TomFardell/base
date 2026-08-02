@@ -12,11 +12,15 @@
 
 #include <stdbool.h>
 
+#include "data.h"
 #include "definitions.h"
 #include "memory.h"
 #include "string.h"
 
 typedef U32 Date;
+
+define_array(Date);
+define_node(Date);
 
 typedef enum DayOfWeek {
   DAY_MON = 0,

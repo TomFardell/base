@@ -28,15 +28,8 @@ typedef struct String {
   U64 len;
 } String;
 
-typedef struct StringArray {
-  String *data;
-  U64 count;
-} StringArray;
-
-typedef struct StringNode {
-  String data;
-  LinkNode node;
-} StringNode;
+define_array(String);
+define_node(String);
 
 #define Stringf ".*s"
 #define stringf_args(s) (int)((s).len), (s).str

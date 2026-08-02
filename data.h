@@ -4,9 +4,10 @@
 // This module contains logic for linked lists.
 //
 // These linked lists are implemented similarly to in the Linux kernel. Rather than link nodes themselves
-// containing data, link nodes can be inserted into any struct at any position. The linked list logic applies only
-// to the link nodes, so these methods work for any struct containing a link node (or even mmultiple). Link nodes
-// are doubly linked to two other link nodes, meaning linked lists are all doubly linked lists.
+// containing data, we use define_node to define node structs that hold both data and a link node. We can then use
+// the link_node_get_container_node and link_node_get_data macros to retrieve the node struct and the data held in
+// the node struct respectively. Link nodes are doubly linked to two other link nodes, meaning linked lists are all
+// doubly linked lists.
 //
 // Linked lists work as follows:
 // - Linked lists have a head node that should not have data attached. An empty linked list is just a head node
@@ -36,6 +37,9 @@
 //
 // Some methods allow for indexing of elements of a linked list. These can take a negative index, which will index
 // from the back of the list, i.e. an index of -1 corresponds to the last element.
+//
+// Iterating over linked lists can be done using the foreach macro(s). This expands to a for loop that iterates
+// over all data-containing link nodes in the list.
 /*---------------------------------------------------------------------------------------------------------------*/
 #ifndef DATA_H
 #define DATA_H
@@ -47,12 +51,24 @@ typedef struct LinkNode {
   struct LinkNode *prev;
 } LinkNode;
 
+// These member names will be used within other macros, so makes sense to define all these node types using this
+#define define_node(type)     \
+  typedef struct type##Node { \
+    type data;                \
+    LinkNode node;            \
+  } type##Node
+
 // Initialise a new link node given pointers to next and previous nodes
 LinkNode link_node_init(LinkNode *next, LinkNode *prev);
 
-// Get the container node for a given link node, given the link node is a specified member of a specified type
-#define link_node_get_container_node(node_address, container_type_name, container_link_node_member_name) \
-  ((container_type_name *)((U64)(node_address) - offset_of(container_type_name, container_link_node_member_name)))
+// Get the container node for a given link node, assuming the link node is contained within a node struct defined
+// using the define_node macro
+#define link_node_get_container_node(node_address, container_type) \
+  ((container_type *)((U64)(node_address) - offset_of(container_type, node)))
+// Get the data associated wiht a given link node, assuming the link node is contained within a node struct defined
+// using the define_node macro
+#define link_node_get_data(node_address, data_type) \
+  (link_node_get_container_node(node_address, data_type##Node)->data)
 
 // Insert a link node after a given node
 void link_node_insert_after(LinkNode *after, LinkNode *node);
@@ -73,13 +89,24 @@ void linked_list_insert_at_index(LinkNode *head, I64 idx, LinkNode *node);
 
 // Get the node at a given index
 LinkNode *linked_list_get_node_at_index(const LinkNode *head, I64 idx);
-// Get the container node at a given index in a linked list
-#define linked_list_get_container_node_at_index(head_address, idx, container_type_name,               \
-                                                container_link_node_member_name)                      \
-  link_node_get_container_node(linked_list_get_node_at_index(head_address, idx), container_type_name, \
-                               container_link_node_member_name)
+// Get the container node at a given index in a linked list, assuming the link nodes of the linked list are
+// contained within node structs defined using the define_node macro
+#define linked_list_get_container_node_at_index(head_address, idx, container_type) \
+  link_node_get_container_node(linked_list_get_node_at_index(head_address, idx), container_type)
+// Get the data at a given index in a linked list, assuming the link nodes of the linked list are contained within
+// node structs defined using the define_node macro
+#define linked_list_get_data_at_index(head_address, idx, data_type) \
+  linked_list_get_container_node_at_index(head_address, idx, data_type##Node)->data
 // Get the number of elements in a linked list
 U64 linked_list_get_length(const LinkNode *head);
+
+// Macro to iterate over a linked list. This only gets the link nodes, so the first line of the body should
+// probably call link_node_get_container_node or link_node_get_data
+#define foreach(node_name, head_address) \
+  for (LinkNode *node_name = (head_address)->next; node_name != (head_address); node_name = node_name->next)
+// Macro to iterate over a linked list in the reverse direction
+#define foreach_reverse(node_name, head_address) \
+  for (LinkNode *node_name = (head_address)->prev; node_name != (head_address); node_name = node_name->prev)
 
 // Remove the node at a given index from a linked list
 void linked_list_remove_at_index(LinkNode *head, I64 idx);

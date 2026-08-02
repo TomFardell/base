@@ -1,7 +1,9 @@
 /*----------------*/
 /* Compound Types */
 /*---------------------------------------------------------------------------------------------------------------*/
-// This module contains the repetititve definitions of a bunch of useful structs, as outlined below.
+// This module contains the repetititve definitions of a bunch of useful structs, as outlined below. These structs
+// are defined using macros. See definitions.h and data.h for the definitions of the define_array and define_node
+// macros respectively.
 //
 // Array with pointer to first element and element count:
 // +----------------------+
@@ -19,14 +21,16 @@
 // | LinkNode node      |
 // +--------------------+
 //
-// Vector containing (2-4) elements with (x,y,z,w) indexing:
+// Vector containing (2-4) elements with (x,y,z,w) indexing, or numbered indexing (using union magic):
 // +-------------------+     +-------------------+     +-------------------+
 // | <Type>Vec2 my_vec |     | <Type>Vec3 my_vec |     | <Type>Vec4 my_vec |
 // +-------------------+     +-------------------+     +-------------------+
 // | <Type> x          |     | <Type> x          |     | <Type> x          |
 // | <Type> y          |     | <Type> y          |     | <Type> y          |
-// +-------------------+     | <Type> z          |     | <Type> z          |
-//                           +-------------------+     | <Type> w          |
+// | OR                |     | <Type> z          |     | <Type> z          |
+// | <Type> data[2]    |     | OR                |     | <Type> w          |
+// +-------------------+     | <Type> data[3]    |     | OR                |
+//                           +-------------------+     | <Type> data[4]    |
 //                                                     +-------------------+
 //
 /*---------------------------------------------------------------------------------------------------------------*/
@@ -37,184 +41,96 @@
 #include "data.h"
 #include "definitions.h"
 
-typedef struct I8Array {
-  I8 *data;
-  U64 count;
-} I8Array;
-typedef struct I16Array {
-  I16 *data;
-  U64 count;
-} I16Array;
-typedef struct I32Array {
-  I32 *data;
-  U64 count;
-} I32Array;
-typedef struct I64Array {
-  I64 *data;
-  U64 count;
-} I64Array;
+#define define_vec2(type)     \
+  typedef struct type##Vec2 { \
+    union {                   \
+      struct {                \
+        type x;               \
+        type y;               \
+      };                      \
+      type data[2];           \
+    };                        \
+  } type##Vec2
 
-typedef struct U8Array {
-  U8 *data;
-  U64 count;
-} U8Array;
-typedef struct U16Array {
-  U16 *data;
-  U64 count;
-} U16Array;
-typedef struct U32Array {
-  U32 *data;
-  U64 count;
-} U32Array;
-typedef struct U64Array {
-  U64 *data;
-  U64 count;
-} U64Array;
+#define define_vec3(type)     \
+  typedef struct type##Vec3 { \
+    union {                   \
+      struct {                \
+        type x;               \
+        type y;               \
+        type z;               \
+      };                      \
+      type data[3];           \
+    };                        \
+  } type##Vec3
 
-typedef struct F32Array {
-  F32 *data;
-  U64 count;
-} F32Array;
-typedef struct F64Array {
-  F64 *data;
-  U64 count;
-} F64Array;
+#define define_vec4(type)     \
+  typedef struct type##Vec4 { \
+    union {                   \
+      struct {                \
+        type x;               \
+        type y;               \
+        type z;               \
+        type w;               \
+      };                      \
+      type data[4];           \
+    };                        \
+  } type##Vec4
 
-typedef struct I8Node {
-  I8 data;
-  LinkNode node;
-} I8Node;
-typedef struct I16Node {
-  I16 data;
-  LinkNode node;
-} I16Node;
-typedef struct I32Node {
-  I32 data;
-  LinkNode node;
-} I32Node;
-typedef struct I64Node {
-  I64 data;
-  LinkNode node;
-} I64Node;
+define_array(I8);
+define_array(I16);
+define_array(I32);
+define_array(I64);
+define_array(U8);
+define_array(U16);
+define_array(U32);
+define_array(U64);
+define_array(F32);
+define_array(F64);
 
-typedef struct U8Node {
-  U8 data;
-  LinkNode node;
-} U8Node;
-typedef struct U16Node {
-  U16 data;
-  LinkNode node;
-} U16Node;
-typedef struct U32Node {
-  U32 data;
-  LinkNode node;
-} U32Node;
-typedef struct U64Node {
-  U64 data;
-  LinkNode node;
-} U64Node;
+define_node(I8);
+define_node(I16);
+define_node(I32);
+define_node(I64);
+define_node(U8);
+define_node(U16);
+define_node(U32);
+define_node(U64);
+define_node(F32);
+define_node(F64);
 
-typedef struct F32Node {
-  F32 data;
-  LinkNode node;
-} F32Node;
-typedef struct F64Node {
-  F64 data;
-  LinkNode node;
-} F64Node;
+define_vec2(I8);
+define_vec2(I16);
+define_vec2(I32);
+define_vec2(I64);
+define_vec2(U8);
+define_vec2(U16);
+define_vec2(U32);
+define_vec2(U64);
+define_vec2(F32);
+define_vec2(F64);
 
-typedef struct I32Vec2 {
-  I32 x;
-  I32 y;
-} I32Vec2;
-typedef struct I32Vec3 {
-  I32 x;
-  I32 y;
-  I32 z;
-} I32Vec3;
-typedef struct I32Vec4 {
-  I32 x;
-  I32 y;
-  I32 z;
-  I32 w;
-} I32Vec4;
-typedef struct I64Vec2 {
-  I64 x;
-  I64 y;
-} I64Vec2;
-typedef struct I64Vec3 {
-  I64 x;
-  I64 y;
-  I64 z;
-} I64Vec3;
-typedef struct I64Vec4 {
-  I64 x;
-  I64 y;
-  I64 z;
-  I64 w;
-} I64Vec4;
+define_vec3(I8);
+define_vec3(I16);
+define_vec3(I32);
+define_vec3(I64);
+define_vec3(U8);
+define_vec3(U16);
+define_vec3(U32);
+define_vec3(U64);
+define_vec3(F32);
+define_vec3(F64);
 
-typedef struct U32Vec2 {
-  U32 x;
-  U32 y;
-} U32Vec2;
-typedef struct U32Vec3 {
-  U32 x;
-  U32 y;
-  U32 z;
-} U32Vec3;
-typedef struct U32Vec4 {
-  U32 x;
-  U32 y;
-  U32 z;
-  U32 w;
-} U32Vec4;
-typedef struct U64Vec2 {
-  U64 x;
-  U64 y;
-} U64Vec2;
-typedef struct U64Vec3 {
-  U64 x;
-  U64 y;
-  U64 z;
-} U64Vec3;
-typedef struct U64Vec4 {
-  U64 x;
-  U64 y;
-  U64 z;
-  U64 w;
-} U64Vec4;
-
-typedef struct F32Vec2 {
-  F32 x;
-  F32 y;
-} F32Vec2;
-typedef struct F32Vec3 {
-  F32 x;
-  F32 y;
-  F32 z;
-} F32Vec3;
-typedef struct F32Vec4 {
-  F32 x;
-  F32 y;
-  F32 z;
-  F32 w;
-} F32Vec4;
-typedef struct F64Vec2 {
-  F64 x;
-  F64 y;
-} F64Vec2;
-typedef struct F64Vec3 {
-  F64 x;
-  F64 y;
-  F64 z;
-} F64Vec3;
-typedef struct F64Vec4 {
-  F64 x;
-  F64 y;
-  F64 z;
-  F64 w;
-} F64Vec4;
+define_vec4(I8);
+define_vec4(I16);
+define_vec4(I32);
+define_vec4(I64);
+define_vec4(U8);
+define_vec4(U16);
+define_vec4(U32);
+define_vec4(U64);
+define_vec4(F32);
+define_vec4(F64);
 
 #endif  // COMPOUND_TYPES_H
 

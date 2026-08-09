@@ -48,24 +48,18 @@ static noreturn void _date_abort(const char *file, int line, const char *func, .
 }
 
 Date date_init(Day day, Month month, Year year) {
-  if (year < MIN_YEAR || MAX_YEAR < year) {
-    date_abort("Invalid year %" U32f ", outside range [%" U32f ", %" U32f "]", year, MIN_YEAR, MAX_YEAR);
-  }
-
-  if (month < MONTH_JAN || MONTH_DEC < month) {
-    date_abort("Invalid month %d, outside range [%d, %d]", (int)month, (int)MONTH_JAN, (int)MONTH_DEC);
-  }
-
-  if (day < 1 || month_get_days_in_month(month) < day) {
-    date_abort("Invalid day %" U32f ", outside range [%" U32f ", %" U32f "]", day, 1,
-               month_get_days_in_month(month));
-  }
-
-  if (day == 29 && month == 2 && !year_is_leap_year(year)) {
-    date_abort("Feb 29 for non leap year %" U32f, year);
+  if (!date_exists(day, month, year)) {
+    date_abort("Cannot initialise invalid date with day=%" Dayf ", month=%" Monthf ", year=%" Yearf, day, month,
+               year);
   }
 
   return day * DAY_MULTIPLIER + month * MONTH_MULTIPLIER + year * YEAR_MULTIPLIER;
+}
+
+bool date_exists(Day day, Month month, Year year) {
+  return ((MIN_YEAR <= year && year <= MAX_YEAR) && (MONTH_JAN <= month && month <= MONTH_DEC) &&
+          (1 <= day && day <= month_get_days_in_month(month)) &&
+          (day != 29 || month != 2 || year_is_leap_year(year)));
 }
 
 // Use Mon 01/01/801 as the baseline for calculating days of week

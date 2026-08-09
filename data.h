@@ -87,7 +87,7 @@ void linked_list_push_front(LinkNode *head, LinkNode *node);
 // Insert a node into a linked list so that that node's index becomes the index passed
 void linked_list_insert_at_index(LinkNode *head, I64 idx, LinkNode *node);
 
-// Get the node at a given index
+// Get the link node node at a given index in a linked list
 LinkNode *linked_list_get_node_at_index(const LinkNode *head, I64 idx);
 // Get the container node at a given index in a linked list, assuming the link nodes of the linked list are
 // contained within node structs defined using the define_node macro

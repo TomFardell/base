@@ -33,6 +33,7 @@ typedef enum DayOfWeek {
 } DayOfWeek;
 
 typedef U32 Day;
+#define Dayf U32f
 
 typedef enum Month {
   MONTH_JAN = 1,
@@ -48,8 +49,10 @@ typedef enum Month {
   MONTH_NOV = 11,
   MONTH_DEC = 12,
 } Month;
+#define Monthf "d"
 
 typedef U32 Year;
+#define Yearf U32f
 
 typedef enum DateFormat {
   DATE_FORMAT_NUMERICAL_NO_YEAR,           // I.e. 01/01
@@ -72,6 +75,9 @@ const extern Year MAX_YEAR;
 
 // Initialise a date given a day, month and year
 Date date_init(Day day, Month month, Year year);
+
+// Get whether the given combination of day, month and year forms a valid date
+bool date_exists(Day day, Month month, Year year);
 
 // Given a date, calculate the day of the week
 DayOfWeek date_get_day_of_week(Date date);

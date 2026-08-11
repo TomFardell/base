@@ -132,7 +132,7 @@ String string_concat(Arena *a, U64 count, ...) {
   return result;
 }
 
-String string_concat_arr(Arena *a, StringArray str_arr) {
+String string_concat_arr(Arena *a, const StringArray str_arr) {
   U64 result_len = 0;
 
   for (U64 i = 0; i < str_arr.count; ++i) {
@@ -168,7 +168,7 @@ String string_join(Arena *a, String delimeter, U64 count, ...) {
   return result;
 }
 
-String string_join_arr(Arena *a, String delimeter, StringArray str_arr) {
+String string_join_arr(Arena *a, String delimeter, const StringArray str_arr) {
   if (str_arr.count == 0) {
     return string_literal("");
   }
@@ -252,7 +252,7 @@ String string_format(Arena *a, const char *format, ...) {
 
 String string_remove(Arena *a, String str, String rem) {
   if ((rem.len > str.len) || (rem.len == 0)) {
-    return str;
+    return string_copy(a, str);
   }
   char *result_str = arena_alloc_array(a, char, str.len);  // Max length would be if nothing is removed
 
@@ -269,6 +269,44 @@ String string_remove(Arena *a, String str, String rem) {
   }
 
   return string_init(result_str, res_i);
+}
+
+String string_replace(Arena *a, String str, String rem, String repl) {
+  if (rem.len == 0) {
+    return string_copy(a, str);
+  }
+
+  U64 result_len = str.len;
+
+  {
+    String remaining_str = str;
+    U64 pos = string_find_first(remaining_str, rem);
+    while (pos != U64NULL) {
+      result_len += repl.len - rem.len;
+
+      remaining_str = string_init_substring(remaining_str, pos + rem.len, remaining_str.len);
+      pos = string_find_first(remaining_str, rem);
+    }
+  }
+
+  char *result_str = arena_alloc_array(a, char, result_len);
+
+  {
+    String remaining_str = str;
+    U64 abs_pos = 0;
+    U64 rel_pos = string_find_first(remaining_str, rem);
+    while (rel_pos != U64NULL) {
+      memcpy(result_str + abs_pos, remaining_str.str, rel_pos);
+      memcpy(result_str + abs_pos + rel_pos, repl.str, repl.len);
+      abs_pos += rel_pos + repl.len;
+
+      remaining_str = string_init_substring(remaining_str, rel_pos + rem.len, remaining_str.len);
+      rel_pos = string_find_first(remaining_str, rem);
+    }
+    memcpy(result_str + abs_pos, remaining_str.str, remaining_str.len);
+  }
+
+  return string_init(result_str, result_len);
 }
 
 bool string_contains(String str, String substr) {

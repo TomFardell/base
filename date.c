@@ -4,6 +4,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdnoreturn.h>
+#include <time.h>
 
 #include "data.h"
 #include "definitions.h"
@@ -56,10 +57,66 @@ Date date_init(Day day, Month month, Year year) {
   return day * DAY_MULTIPLIER + month * MONTH_MULTIPLIER + year * YEAR_MULTIPLIER;
 }
 
+Date date_init_today(void) {
+  time_t current_date_time = time(NULL);
+  struct tm current_date_time_tm = *localtime(&current_date_time);
+
+  return date_init(current_date_time_tm.tm_mday, current_date_time_tm.tm_mon + 1,
+                   current_date_time_tm.tm_year + 1900);
+}
+
 bool date_exists(Day day, Month month, Year year) {
   return ((MIN_YEAR <= year && year <= MAX_YEAR) && (MONTH_JAN <= month && month <= MONTH_DEC) &&
           (1 <= day && day <= month_get_days_in_month(month)) &&
           (day != 29 || month != 2 || year_is_leap_year(year)));
+}
+
+Date date_add_days(Date date, I32 days) {
+  I32 new_day = date_get_day(date) + days;
+  I32 new_month = date_get_month(date);
+  Year new_year = date_get_year(date);
+
+  if (new_day > 0) {
+    while (new_day > (I32)month_get_days_in_month(new_month)) {
+      new_day -= month_get_days_in_month(new_month) - (new_month == MONTH_FEB && !year_is_leap_year(new_year));
+      new_month = (((new_month - 1) + 1) % 12) + 1;
+      new_year += (new_month == MONTH_JAN);
+    }
+  } else {
+    while (new_day < 1) {
+      new_month = mod((new_month - 1) - 1, 12) + 1;
+      new_year -= (new_month == MONTH_DEC);
+      new_day += month_get_days_in_month(new_month) - (new_month == MONTH_FEB && !year_is_leap_year(new_year));
+    }
+  }
+
+  if (new_day == 29 && new_month == MONTH_FEB && !year_is_leap_year(new_year)) {
+    return date_init(1, MONTH_MAR, new_year);
+  }
+
+  return date_init(new_day, new_month, new_year);
+}
+
+Date date_add_months(Date date, I32 months) {
+  I32 months_diff = date_get_month(date) + months;
+  Month new_month = mod(months_diff - 1, 12) + 1;
+  Year new_year = date_get_year(date) + ((months_diff - 1) / 12) - (months_diff < 0);
+
+  // If adding months causes the day to be too large, just set it to be the last day of the new month
+  Day new_day = clamp_above(date_get_day(date), month_get_days_in_month(new_month));
+  new_day -= (new_day == 29 && new_month == MONTH_FEB && !year_is_leap_year(new_year));
+
+  return date_init(new_day, new_month, new_year);
+}
+
+Date date_add_years(Date date, I32 years) {
+  Month month = date_get_month(date);
+  I32 new_year = date_get_year(date) + years;
+  // If this is a feb 29 and the new year is not a leap year, set day to 28
+  Day new_day =
+      date_get_day(date) - (date_get_day(date) == 29 && month == MONTH_FEB && !year_is_leap_year(new_year));
+
+  return date_init(new_day, month, new_year);
 }
 
 // Use Mon 01/01/801 as the baseline for calculating days of week

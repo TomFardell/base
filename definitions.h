@@ -94,6 +94,8 @@ const extern F64 PI64;
 #define norm(x) (((x) > 0) ? (x) : (0 - (x)))
 #define norm_dist(x, y) norm((x) - (y))
 
+#define mod(x, y) (((x) % (y)) >= 0 ? ((x) % (y)) : ((y) + ((x) % (y))))
+
 #define F32_eq(x, y) (norm_dist(x, y) < F32EPS)
 #define F32_lt(x, y) ((x) < (y))
 #define F32_leq(x, y) (F32_lt(x, y) || F32_eq(x, y))

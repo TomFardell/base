@@ -18,6 +18,7 @@
 #include "string.h"
 
 typedef U32 Date;
+#define Datef U32f
 
 define_array(Date);
 define_node(Date);
@@ -75,9 +76,17 @@ const extern Year MAX_YEAR;
 
 // Initialise a date given a day, month and year
 Date date_init(Day day, Month month, Year year);
+// Get today's date
+Date date_init_today(void);
 
 // Get whether the given combination of day, month and year forms a valid date
 bool date_exists(Day day, Month month, Year year);
+// Get the date a given number of days into the future from the passed date
+Date date_add_days(Date date, I32 days);
+// Get the date a given number of months into the future from the passed date
+Date date_add_months(Date date, I32 months);
+// Get the date a given number of years into the future from the passed date
+Date date_add_years(Date date, I32 years);
 
 // Given a date, calculate the day of the week
 DayOfWeek date_get_day_of_week(Date date);

@@ -190,26 +190,33 @@ const char *date_get_cstring(Arena *a, Date date, DateFormat date_format, DayOfW
     string_builder_add_string(&sb_arena, &sb_head, string_literal(" "));
   }
 
-  String delimeter = (date_format <= DATE_FORMAT_NUMERICAL_FULL) ? string_literal("/") : string_literal(" ");
+  // This case is different enough from the other formats to warrant having this done separately
+  if (date_format == DATE_FORMAT_HTML) {
+    string_builder_add_string(&sb_arena, &sb_head,
+                              string_format(&sb_arena, "%" Yearf "-%02" Monthf "-%02" Dayf, date_get_year(date),
+                                            (int)date_get_month(date), date_get_day(date)));
+  } else {
+    String delimeter = (date_format <= DATE_FORMAT_NUMERICAL_FULL) ? string_literal("/") : string_literal(" ");
 
-  String day_string = string_format(&sb_arena, "%02" U32f, date_get_day(date));
-  string_builder_add_string(&sb_arena, &sb_head, day_string);
-  string_builder_add_string(&sb_arena, &sb_head, delimeter);
-
-  String month_string =
-      (date_format <= DATE_FORMAT_NUMERICAL_FULL)
-          ? string_format(&sb_arena, "%02d", (int)date_get_month(date))
-          : month_get_string(date_get_month(date), date_format == DATE_FORMAT_ALPHABETICAL_SHORT_NO_YEAR ||
-                                                       date_format == DATE_FORMAT_ALPHABETICAL_SHORT);
-  string_builder_add_string(&sb_arena, &sb_head, month_string);
-
-  if (date_format != DATE_FORMAT_NUMERICAL_NO_YEAR && date_format != DATE_FORMAT_ALPHABETICAL_SHORT_NO_YEAR &&
-      date_format != DATE_FORMAT_ALPHABETICAL_FULL_NO_YEAR) {
+    String day_string = string_format(&sb_arena, "%02" Dayf, date_get_day(date));
+    string_builder_add_string(&sb_arena, &sb_head, day_string);
     string_builder_add_string(&sb_arena, &sb_head, delimeter);
-    String year_string = (date_format == DATE_FORMAT_NUMERICAL_SHORT)
-                             ? string_format(&sb_arena, "%02" U32f, date_get_year(date) % 100)
-                             : string_format(&sb_arena, "%" U32f, date_get_year(date));
-    string_builder_add_string(&sb_arena, &sb_head, year_string);
+
+    String month_string =
+        (date_format <= DATE_FORMAT_NUMERICAL_FULL)
+            ? string_format(&sb_arena, "%02" Monthf, (int)date_get_month(date))
+            : month_get_string(date_get_month(date), date_format == DATE_FORMAT_ALPHABETICAL_SHORT_NO_YEAR ||
+                                                         date_format == DATE_FORMAT_ALPHABETICAL_SHORT);
+    string_builder_add_string(&sb_arena, &sb_head, month_string);
+
+    if (date_format != DATE_FORMAT_NUMERICAL_NO_YEAR && date_format != DATE_FORMAT_ALPHABETICAL_SHORT_NO_YEAR &&
+        date_format != DATE_FORMAT_ALPHABETICAL_FULL_NO_YEAR) {
+      string_builder_add_string(&sb_arena, &sb_head, delimeter);
+      String year_string = (date_format == DATE_FORMAT_NUMERICAL_SHORT)
+                               ? string_format(&sb_arena, "%02" U32f, date_get_year(date) % 100)
+                               : string_format(&sb_arena, "%" Yearf, date_get_year(date));
+      string_builder_add_string(&sb_arena, &sb_head, year_string);
+    }
   }
 
   const char *result = string_builder_get_cstring(a, &sb_head);

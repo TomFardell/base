@@ -63,6 +63,7 @@ typedef enum DateFormat {
   DATE_FORMAT_ALPHABETICAL_FULL_NO_YEAR,   // I.e. 01 January
   DATE_FORMAT_ALPHABETICAL_SHORT,          // I.e. 01 Jan 2004
   DATE_FORMAT_ALPHABETICAL_FULL,           // I.e. 01 January 2004
+  DATE_FORMAT_HTML,                        // I.e. 2004-01-01
 } DateFormat;
 
 typedef enum DayOfWeekFormat {

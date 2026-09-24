@@ -11,5 +11,5 @@ For more detailed information on what this code does, see the documentation in e
 
 ## How to use
 
-I am expecting to use this by including this repository as a submodule. The code can be built by compiling `base.c` which includes all the other `.c` files, or by just compiling the implementations you actually require.
+I am expecting to use this by including this repository as a submodule. I can then reference the included Makefile from my parent project's Makefile to build the archive library `libbase.a` and statically link this to my program.
 

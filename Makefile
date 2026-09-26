@@ -1,7 +1,7 @@
 AR = ar
 CC = gcc
 AFLAGS = rcs
-CFLAGS = -g3 -Wall -std=c17 $(DEPFLAGS)
+CFLAGS = -g3 -Wall -std=c23 $(DEPFLAGS)
 DEPFLAGS = -MMD -MP
 
 CFILES = $(wildcard *.c)

@@ -6,7 +6,9 @@
 #ifndef DEFINITIONS_H
 #define DEFINITIONS_H
 
+#include <float.h>
 #include <inttypes.h>
+#include <stdint.h>
 
 typedef int8_t I8;
 typedef int16_t I16;
@@ -21,38 +23,43 @@ typedef uint64_t U64;
 typedef float F32;
 typedef double F64;
 
-const extern I8 I8MIN;
-const extern I8 I8MAX;
-const extern I16 I16MIN;
-const extern I16 I16MAX;
-const extern I32 I32MIN;
-const extern I32 I32MAX;
-const extern I64 I64MIN;
-const extern I64 I64MAX;
+static constexpr I8 I8MIN = INT8_MIN;
+static constexpr I8 I8MAX = INT8_MAX;
+static constexpr I16 I16MIN = INT16_MIN;
+static constexpr I16 I16MAX = INT16_MAX;
+static constexpr I32 I32MIN = INT32_MIN;
+static constexpr I32 I32MAX = INT32_MAX;
+static constexpr I64 I64MIN = INT64_MIN;
+static constexpr I64 I64MAX = INT64_MAX;
 
-const extern U8 U8MIN;
-const extern U8 U8MAX;
-const extern U16 U16MIN;
-const extern U16 U16MAX;
-const extern U32 U32MIN;
-const extern U32 U32MAX;
-const extern U64 U64MIN;
-const extern U64 U64MAX;
+static constexpr U8 U8MIN = 0;
+static constexpr U8 U8MAX = UINT8_MAX;
+static constexpr U16 U16MIN = 0;
+static constexpr U16 U16MAX = UINT16_MAX;
+static constexpr U32 U32MIN = 0;
+static constexpr U32 U32MAX = UINT32_MAX;
+static constexpr U64 U64MIN = 0;
+static constexpr U64 U64MAX = UINT64_MAX;
 
-const extern I32 I32NULL;
-const extern I64 I64NULL;
-const extern U32 U32NULL;
-const extern U64 U64NULL;
+// Consistent values to represent null/error cases when returning an integer. Hopefully these values are visible
+// when debugging and don't collide with any real return values, but obviously this cannot be guaranteed, so be
+// careful when using these
+static constexpr I32 I32NULL = 0x7DEFDEFD;
+static constexpr I64 I64NULL = 0x7DEFDEFDEFDEFDEF;
+static constexpr U32 U32NULL = 0xFDEFDEFD;
+static constexpr U64 U64NULL = 0xFDEFDEFDEFDEFDEF;
 
-const extern F32 F32MIN;
-const extern F32 F32MAX;
-const extern F32 F32EPS;
-const extern F64 F64MIN;
-const extern F64 F64MAX;
-const extern F64 F64EPS;
+static constexpr F32 F32MIN = FLT_MIN;
+static constexpr F32 F32MAX = FLT_MAX;
+static constexpr F32 F32EPS = FLT_EPSILON;
+static constexpr F64 F64MIN = DBL_MIN;
+static constexpr F64 F64MAX = DBL_MAX;
+static constexpr F64 F64EPS = DBL_EPSILON;
 
-const extern F32 PI32;
-const extern F64 PI64;
+static constexpr F32 PI32 = 3.1415927f;
+static constexpr F64 PI64 = 3.141592653589793;
+static constexpr F32 E32 = 2.718282f;
+static constexpr F64 E64 = 2.718281828459045;
 
 #define I8f PRIi8
 #define I16f PRIi16
@@ -74,6 +81,7 @@ const extern F64 PI64;
   } while (0)
 
 #define offset_of(type_name, member_name) ((U64)(&(((type_name *)0)->member_name)))
+#define array_len(array) (sizeof(array) / sizeof(*array))
 
 #define define_array(type)     \
   typedef struct type##Array { \

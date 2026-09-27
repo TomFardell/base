@@ -79,7 +79,6 @@ static constexpr F64 E64 = 2.718281828459045;
     s;               \
   } while (0)
 
-#define offset_of(type_name, member_name) ((U64)(&(((type_name *)0)->member_name)))
 #define array_len(array) (sizeof(array) / sizeof(*array))
 
 #define define_array(type)     \

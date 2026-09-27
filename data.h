@@ -44,6 +44,8 @@
 #ifndef DATA_H
 #define DATA_H
 
+#include <stddef.h>
+
 #include "definitions.h"
 
 typedef struct LinkNode {
@@ -64,7 +66,7 @@ LinkNode link_node_init(LinkNode *next, LinkNode *prev);
 // Get the container node for a given link node, assuming the link node is contained within a node struct defined
 // using the define_node macro
 #define link_node_get_container_node(node_address, container_type) \
-  ((container_type *)((U64)(node_address) - offset_of(container_type, node)))
+  ((container_type *)((U64)(node_address) - offsetof(container_type, node)))
 // Get the data associated wiht a given link node, assuming the link node is contained within a node struct defined
 // using the define_node macro
 #define link_node_get_data(node_address, data_type) \

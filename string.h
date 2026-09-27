@@ -17,7 +17,6 @@
 #define STRING_H
 
 #include <stdarg.h>
-#include <stdbool.h>
 
 #include "data.h"
 #include "definitions.h"

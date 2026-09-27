@@ -2,10 +2,8 @@
 
 #include <stdalign.h>
 #include <stdarg.h>
-#include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <stdnoreturn.h>
 #include <string.h>
 
 #include "compound_types.h"
@@ -16,7 +14,7 @@
 // Takes same args as printf
 #define string_abort(...) statement(_string_abort(__FILE__, __LINE__, __func__, __VA_ARGS__))
 
-static noreturn void _string_abort(const char *file, int line, const char *func, ...) {
+[[noreturn]] static void _string_abort(const char *file, int line, const char *func, ...) {
   va_list args;
   va_start(args, func);
 

@@ -3,12 +3,11 @@
 #include <stdarg.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <stdnoreturn.h>
 
 // Takes same args as printf
 #define data_abort(...) statement(_data_abort(__FILE__, __LINE__, __func__, __VA_ARGS__))
 
-static noreturn void _data_abort(const char *file, int line, const char *func, ...) {
+[[noreturn]] static void _data_abort(const char *file, int line, const char *func, ...) {
   va_list args;
   va_start(args, func);
 
@@ -52,8 +51,8 @@ void link_node_remove_from_linked_list(LinkNode *node) {
   (node->prev)->next = node->next;
 
   // Poison this node's next and prev
-  node->next = NULL;
-  node->prev = NULL;
+  node->next = nullptr;
+  node->prev = nullptr;
 }
 
 void linked_list_init(LinkNode *head) {

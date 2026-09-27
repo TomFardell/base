@@ -10,8 +10,6 @@
 #ifndef DATE_H
 #define DATE_H
 
-#include <stdbool.h>
-
 #include "data.h"
 #include "definitions.h"
 #include "memory.h"

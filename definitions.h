@@ -74,7 +74,6 @@ static constexpr F64 E64 = 2.718281828459045;
 #define F32f "f"
 #define F64f "lf"
 
-#define unused(var) (void)(var)
 #define statement(s) \
   do {               \
     s;               \

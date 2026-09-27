@@ -1,9 +1,7 @@
 #include "date.h"
 
-#include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <stdnoreturn.h>
 #include <time.h>
 
 #include "data.h"
@@ -29,7 +27,7 @@ static const char *month_names_short[12] = {"Jan", "Feb", "Mar", "Apr", "May", "
 // Takes same args as printf
 #define date_abort(...) statement(_date_abort(__FILE__, __LINE__, __func__, __VA_ARGS__))
 
-static noreturn void _date_abort(const char *file, int line, const char *func, ...) {
+[[noreturn]] static void _date_abort(const char *file, int line, const char *func, ...) {
   va_list args;
   va_start(args, func);
 
@@ -58,7 +56,7 @@ Date date_init(Day day, Month month, Year year) {
 }
 
 Date date_init_today(void) {
-  time_t current_date_time = time(NULL);
+  time_t current_date_time = time(nullptr);
   struct tm current_date_time_tm = *localtime(&current_date_time);
 
   return date_init(current_date_time_tm.tm_mday, current_date_time_tm.tm_mon + 1,

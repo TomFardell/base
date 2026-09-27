@@ -41,40 +41,34 @@
 #include "data.h"
 #include "definitions.h"
 
-#define define_vec2(type)     \
-  typedef struct type##Vec2 { \
-    union {                   \
-      struct {                \
-        type x;               \
-        type y;               \
-      };                      \
-      type data[2];           \
-    };                        \
+#define define_vec2(type)    \
+  typedef union type##Vec2 { \
+    struct {                 \
+      type x;                \
+      type y;                \
+    };                       \
+    type data[2];            \
   } type##Vec2
 
-#define define_vec3(type)     \
-  typedef struct type##Vec3 { \
-    union {                   \
-      struct {                \
-        type x;               \
-        type y;               \
-        type z;               \
-      };                      \
-      type data[3];           \
-    };                        \
+#define define_vec3(type)    \
+  typedef union type##Vec3 { \
+    struct {                 \
+      type x;                \
+      type y;                \
+      type z;                \
+    };                       \
+    type data[3];            \
   } type##Vec3
 
-#define define_vec4(type)     \
-  typedef struct type##Vec4 { \
-    union {                   \
-      struct {                \
-        type x;               \
-        type y;               \
-        type z;               \
-        type w;               \
-      };                      \
-      type data[4];           \
-    };                        \
+#define define_vec4(type)    \
+  typedef union type##Vec4 { \
+    struct {                 \
+      type x;                \
+      type y;                \
+      type z;                \
+      type w;                \
+    };                       \
+    type data[4];            \
   } type##Vec4
 
 define_array(I8);

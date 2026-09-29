@@ -3,22 +3,43 @@ CC = gcc
 AFLAGS = rcs
 CFLAGS = -g3 -Wall -std=c23 $(DEPFLAGS)
 DEPFLAGS = -MMD -MP
+SANFLAGS = -fsanitize=address,undefined
+
+LIBDEF = libbase.a
+LIBSAN = libbasesan.a
+
+BUILDDIR = build
+BUILDDIRDEF = $(BUILDDIR)/default
+BUILDDIRSAN = $(BUILDDIR)/sanitized
 
 CFILES = $(wildcard *.c)
 OBJFILES = $(CFILES:.c=.o)
-DEPFILES = $(OBJFILES:.o=.d)
-LIB = libbase.a
+OBJFILESDEF = $(addprefix $(BUILDDIRDEF)/, $(OBJFILES))
+OBJFILESSAN = $(addprefix $(BUILDDIRSAN)/, $(OBJFILES))
+DEPFILESDEF = $(OBJFILESDEF:.o=.d)
+DEPFILESSAN = $(OBJFILESSAN:.o=.d)
 
-$(LIB): $(OBJFILES)
+all: $(LIBDEF) $(LIBSAN)
+
+$(LIBDEF): $(OBJFILESDEF)
 	$(AR) $(AFLAGS) $@ $^
 
-%.o: %.c
+$(LIBSAN): $(OBJFILESSAN)
+	$(AR) $(AFLAGS) $@ $^
+
+$(BUILDDIRDEF)/%.o: %.c | $(BUILDDIRDEF)
 	$(CC) $(CFLAGS) $(EXTRAFLAGS) -c -o $@ $<
 
+$(BUILDDIRSAN)/%.o: %.c | $(BUILDDIRSAN)
+	$(CC) $(CFLAGS) $(SANFLAGS) $(EXTRAFLAGS) -c -o $@ $<
+
+$(BUILDDIRDEF) $(BUILDDIRSAN):
+	mkdir -p $@
+
 clean:
-	rm -f $(LIB) *.o *.d
+	rm -rf $(LIBDEF) $(LIBSAN) $(BUILDDIR)
 
 -include $(DEPFILES)
 
-.PHONY: clean
+.PHONY: all clean
 

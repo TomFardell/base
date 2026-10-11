@@ -4,14 +4,14 @@
 // This module contains logic for the arena allocator, as well as some other memory-related utilities.
 //
 // The arena allocator allows for sharing lifetimes of data allocated on the heap. An arena is just a block of
-// memory malloc-ed on the heap; effectively a mini-heap we can use to allocate data. Then, once we decide this
+// memory allocated on the heap; effectively a mini-heap we can use to allocate data. Then, once we decide this
 // data is ready to deallocate, we can simply free the whole arena. This should take a lot of the thought out of
 // heap allocations and freeing. There are also some other helpful methods, such as to zero, reset or pop from the
 // end of the arena.
 /*---------------------------------------------------------------------------------------------------------------*/
 
-#ifndef MEMORY_H
-#define MEMORY_H
+#ifndef BASE_MEMORY_H
+#define BASE_MEMORY_H
 
 #include <stdalign.h>
 
@@ -48,6 +48,6 @@ void arena_pop(Arena *a, U64 size);
 // Free a given arena
 void arena_free(Arena *a);
 
-#endif  // MEMORY_H
+#endif  // BASE_MEMORY_H
 
 // vim: filetype=c :

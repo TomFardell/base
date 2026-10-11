@@ -35,40 +35,43 @@
 //
 /*---------------------------------------------------------------------------------------------------------------*/
 
-#ifndef COMPOUND_TYPES_H
-#define COMPOUND_TYPES_H
+#ifndef BASE_COMPOUND_TYPES_H
+#define BASE_COMPOUND_TYPES_H
 
-#include "data.h"
 #include "definitions.h"
+#include "linked_list.h"
 
-#define define_vec2(type)    \
-  typedef union type##Vec2 { \
-    struct {                 \
-      type x;                \
-      type y;                \
-    };                       \
-    type data[2];            \
+#define define_vec2(type)                                   \
+  /* 2-dimensional vector with x, y or numeric accessing */ \
+  typedef union type##Vec2 {                                \
+    struct {                                                \
+      type x;                                               \
+      type y;                                               \
+    };                                                      \
+    type data[2];                                           \
   } type##Vec2
 
-#define define_vec3(type)    \
-  typedef union type##Vec3 { \
-    struct {                 \
-      type x;                \
-      type y;                \
-      type z;                \
-    };                       \
-    type data[3];            \
+#define define_vec3(type)                                      \
+  /* 3-dimensional vector with x, y, z or numeric accessing */ \
+  typedef union type##Vec3 {                                   \
+    struct {                                                   \
+      type x;                                                  \
+      type y;                                                  \
+      type z;                                                  \
+    };                                                         \
+    type data[3];                                              \
   } type##Vec3
 
-#define define_vec4(type)    \
-  typedef union type##Vec4 { \
-    struct {                 \
-      type x;                \
-      type y;                \
-      type z;                \
-      type w;                \
-    };                       \
-    type data[4];            \
+#define define_vec4(type)                                         \
+  /* 4-dimensional vector with x, y, z, w or numeric accessing */ \
+  typedef union type##Vec4 {                                      \
+    struct {                                                      \
+      type x;                                                     \
+      type y;                                                     \
+      type z;                                                     \
+      type w;                                                     \
+    };                                                            \
+    type data[4];                                                 \
   } type##Vec4
 
 define_array(I8);
@@ -126,6 +129,6 @@ define_vec4(U64);
 define_vec4(F32);
 define_vec4(F64);
 
-#endif  // COMPOUND_TYPES_H
+#endif  // BASE_COMPOUND_TYPES_H
 
 // vim: filetype=c :

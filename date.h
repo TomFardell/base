@@ -7,11 +7,11 @@
 // calculate the day of the week (i.e. Thursday) for dates. Since dates are just numbers, we can use comparison
 // operators on them.
 /*---------------------------------------------------------------------------------------------------------------*/
-#ifndef DATE_H
-#define DATE_H
+#ifndef BASE_DATE_H
+#define BASE_DATE_H
 
-#include "data.h"
 #include "definitions.h"
+#include "linked_list.h"
 #include "memory.h"
 #include "string.h"
 
@@ -116,6 +116,6 @@ String date_get_string(Arena *a, Date date, DateFormat date_format, DayOfWeekFor
 // Get the cstring representation of a given date with a specified format
 const char *date_get_cstring(Arena *a, Date date, DateFormat date_format, DayOfWeekFormat day_of_week_format);
 
-#endif  // ifndef DATE_H
+#endif  // BASE_DATE_H
 
 // vim: filetype=c :

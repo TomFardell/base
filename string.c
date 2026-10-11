@@ -7,8 +7,8 @@
 #include <string.h>
 
 #include "compound_types.h"
-#include "data.h"
 #include "definitions.h"
+#include "linked_list.h"
 #include "memory.h"
 
 // Takes same args as printf

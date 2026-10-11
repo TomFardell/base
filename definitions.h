@@ -1,10 +1,10 @@
 /*-------------*/
 /* Definitions */
 /*---------------------------------------------------------------------------------------------------------------*/
-// This module contains a number of simple types and macros, as well as some useful contants.
+// This module contains a number of simple types and macros, as well as some useful constants.
 /*---------------------------------------------------------------------------------------------------------------*/
-#ifndef DEFINITIONS_H
-#define DEFINITIONS_H
+#ifndef BASE_DEFINITIONS_H
+#define BASE_DEFINITIONS_H
 
 #include <float.h>
 #include <inttypes.h>
@@ -81,10 +81,11 @@ static constexpr F64 E64 = 2.718281828459045;
 
 #define array_len(array) (sizeof(array) / sizeof(*array))
 
-#define define_array(type)     \
-  typedef struct type##Array { \
-    type *data;                \
-    U64 count;                 \
+#define define_array(type)                \
+  /* Array with data and element count */ \
+  typedef struct type##Array {            \
+    type *data;                           \
+    U64 count;                            \
   } type##Array
 
 #define KB(n) ((1 << 10) * (n))
@@ -116,6 +117,6 @@ static constexpr F64 E64 = 2.718281828459045;
 #define F64_geq(x, y) (F64_gt(x, y) || F64_eq(x, y))
 #define F64_neq(x, y) (!F64_eq(x, y))
 
-#endif  // DEFINITIONS_H
+#endif  // BASE_DEFINITIONS_H
 
 // vim: filetype=c :

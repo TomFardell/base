@@ -1,5 +1,5 @@
-/*------*/
-/* Data */
+/*-------------*/
+/* Linked List */
 /*---------------------------------------------------------------------------------------------------------------*/
 // This module contains logic for linked lists.
 //
@@ -41,12 +41,13 @@
 // Iterating over linked lists can be done using the foreach macro(s). This expands to a for loop that iterates
 // over all data-containing link nodes in the list.
 /*---------------------------------------------------------------------------------------------------------------*/
-#ifndef DATA_H
-#define DATA_H
+#ifndef BASE_LINKED_LIST_H
+#define BASE_LINKED_LIST_H
 
 #include <stddef.h>
 
 #include "definitions.h"
+#include "memory.h"
 
 typedef struct LinkNode {
   struct LinkNode *next;
@@ -54,10 +55,11 @@ typedef struct LinkNode {
 } LinkNode;
 
 // These member names will be used within other macros, so makes sense to define all these node types using this
-#define define_node(type)     \
-  typedef struct type##Node { \
-    type data;                \
-    LinkNode node;            \
+#define define_node(type)                    \
+  /* Node containing data and a LinkNode  */ \
+  typedef struct type##Node {                \
+    type data;                               \
+    LinkNode node;                           \
   } type##Node
 
 // Initialise a new link node given pointers to next and previous nodes
@@ -113,6 +115,6 @@ U64 linked_list_get_length(const LinkNode *head);
 // Remove the node at a given index from a linked list
 void linked_list_remove_at_index(LinkNode *head, I64 idx);
 
-#endif  // DATA_H
+#endif  // BASE_LINKED_LIST_H
 
 // vim: filetype=c :

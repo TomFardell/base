@@ -13,13 +13,13 @@
 // allocate the resulting string after each concatenation, so using a string builder should be preferred when the
 // alternative would be numerous calls of concat/append.
 /*---------------------------------------------------------------------------------------------------------------*/
-#ifndef STRING_H
-#define STRING_H
+#ifndef BASE_STRING_H
+#define BASE_STRING_H
 
 #include <stdarg.h>
 
-#include "data.h"
 #include "definitions.h"
+#include "linked_list.h"
 #include "memory.h"
 
 typedef struct String {
@@ -62,9 +62,9 @@ String string_append(Arena *a, String str, String suffix);
 String string_concat(Arena *a, U64 count, ...);
 // Concatenate an array of strings
 String string_concat_arr(Arena *a, const StringArray str_arr);
-// Join strings passed as variadic args with a given delimeter
+// Join strings passed as variadic args with a given delimiter
 String string_join(Arena *a, String delimeter, U64 count, ...);
-// Join an array of strings with a given delimeter
+// Join an array of strings with a given delimiter
 String string_join_arr(Arena *a, String delimeter, const StringArray str_arr);
 // Get the uppercase of a string
 String string_upper(Arena *a, String str);
@@ -86,7 +86,7 @@ U64 string_find_first(String str, String substr);
 // Get the indices of the start of all occurrence of a substring in a string
 LinkNode *string_find_all(Arena *a, String str, String substr);
 
-// Split a string into a linked list of tokens on a given delimeter
+// Split a string into a linked list of tokens on a given delimiter
 LinkNode *string_split(Arena *a, String str, String delimeter);
 
 // Add a string to the end of a string builder
@@ -98,6 +98,6 @@ String string_builder_get_string(Arena *a, const LinkNode *sb_head);
 // Flatten a string builder into a single cstring
 char *string_builder_get_cstring(Arena *a, const LinkNode *sb_head);
 
-#endif  // STRING_H
+#endif  // BASE_STRING_H
 
 // vim: filetype=c :

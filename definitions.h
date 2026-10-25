@@ -79,6 +79,8 @@ static constexpr F64 E64 = 2.718281828459045;
     s;               \
   } while (0)
 
+#define eat_semicolon() static_assert(1)
+
 #define array_len(array) (sizeof(array) / sizeof(*array))
 
 #define define_array(type)                \

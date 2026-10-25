@@ -5,6 +5,7 @@ This is a C base layer for use in my other projects. Currently contains:
 - Arena allocator
 - Length-based strings
 - Doubly linked lists
+- Macros to define custom stacks
 - Lots of helper functions, macros and other data structures
 
 For more detailed information on what this code does, see the documentation in each header file, as well as comments around the methods.

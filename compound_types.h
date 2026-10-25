@@ -33,6 +33,15 @@
 //                           +-------------------+     | <Type> data[4]    |
 //                                                     +-------------------+
 //
+// Stack containing data, a top position and a capacity:
+// +----------------------+
+// | <Type>Stack my_stack |
+// +----------------------+
+// | <Type> *data         |
+// | U64 top              |
+// | U64 capacity         |
+// +----------------------+
+//
 /*---------------------------------------------------------------------------------------------------------------*/
 
 #ifndef BASE_COMPOUND_TYPES_H
@@ -40,6 +49,7 @@
 
 #include "definitions.h"
 #include "linked_list.h"
+#include "stack.h"
 
 #define define_vec2(type)                                   \
   /* 2-dimensional vector with x, y or numeric accessing */ \
@@ -128,6 +138,17 @@ define_vec4(U32);
 define_vec4(U64);
 define_vec4(F32);
 define_vec4(F64);
+
+declare_stack(I8);
+declare_stack(I16);
+declare_stack(I32);
+declare_stack(I64);
+declare_stack(U8);
+declare_stack(U16);
+declare_stack(U32);
+declare_stack(U64);
+declare_stack(F32);
+declare_stack(F64);
 
 #endif  // BASE_COMPOUND_TYPES_H
 

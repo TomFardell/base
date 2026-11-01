@@ -39,7 +39,8 @@ $(BUILDDIRDEF) $(BUILDDIRSAN):
 clean:
 	rm -rf $(LIBDEF) $(LIBSAN) $(BUILDDIR)
 
--include $(DEPFILES)
+-include $(DEPFILESDEF)
+-include $(DEPFILESSAN)
 
 .PHONY: all clean
 

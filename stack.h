@@ -45,84 +45,110 @@
   bool stack_is_full_##type(const type##Stack *stack);                                        \
   /* Determine whether the given stack is empty */                                            \
   bool stack_is_empty_##type(const type##Stack *stack);                                       \
+  /* Get the index of the top of the stack */                                                 \
+  U64 stack_get_top_##type(const type##Stack *stack);                                         \
+  /* Get the capacity of the stack */                                                         \
+  U64 stack_get_capacity_##type(const type##Stack *stack);                                    \
                                                                                               \
   /* Remove and return the top element of a stack */                                          \
   type stack_pop_##type(type##Stack *stack);                                                  \
   /* Get the top element of a stack without removing it */                                    \
   type stack_peek_##type(const type##Stack *stack);                                           \
+  /* Get a reference to the top element of a stack without removing it */                     \
+  type *stack_get_top_ref_##type(type##Stack *stack);                                         \
   /* Push a value to the top of the stack */                                                  \
   void stack_push_##type(type##Stack *stack, type value)
 
-#define _define_stack_methods_with_attributes(type, attributes)                                          \
-  /* Abort used in stack methods. Should not be used outside of these */                                 \
-  [[noreturn]] static void _stack_abort##type(const char *file, int line, const char *func, ...) {       \
-    va_list args;                                                                                        \
-    va_start(args, func);                                                                                \
-                                                                                                         \
-    const char *message = va_arg(args, const char *);                                                    \
-                                                                                                         \
-    fprintf(stderr, "\n");                                                                               \
-    fprintf(stderr, "> ---| Stack error |---\n");                                                        \
-    fprintf(stderr, "> Error in %s->%s (line %d)\n", file, func, line);                                  \
-    fprintf(stderr, "> ");                                                                               \
-    vfprintf(stderr, message, args);                                                                     \
-    fprintf(stderr, "\n");                                                                               \
-    fprintf(stderr, "Terminating program\n");                                                            \
-                                                                                                         \
-    va_end(args);                                                                                        \
-                                                                                                         \
-    exit(EXIT_FAILURE);                                                                                  \
-  }                                                                                                      \
-                                                                                                         \
-  /* Initialise a stack given pointer to a container and its capacity (number of elements) */            \
-  attributes type##Stack stack_init_##type(type *data, U64 capacity) {                                   \
-    return (type##Stack){data, 0, capacity};                                                             \
-  }                                                                                                      \
-                                                                                                         \
-  /* Initialise a stack of a given capacity (number of elements) on the passed arena */                  \
-  attributes type##Stack stack_init_arena_##type(Arena *a, U64 capacity) {                               \
-    return stack_init_##type(arena_alloc_array(a, type, capacity), capacity);                            \
-  }                                                                                                      \
-                                                                                                         \
-  /* Determine whether the given stack is at capacity */                                                 \
-  attributes bool stack_is_full_##type(const type##Stack *stack) {                                       \
-    return (stack->top == stack->capacity);                                                              \
-  }                                                                                                      \
-                                                                                                         \
-  /* Determine whether the given stack is empty */                                                       \
-  attributes bool stack_is_empty_##type(const type##Stack *stack) {                                      \
-    return (stack->top == 0);                                                                            \
-  }                                                                                                      \
-                                                                                                         \
-  /* Remove and return the top element of a stack */                                                     \
-  attributes type stack_pop_##type(type##Stack *stack) {                                                 \
-    if (stack_is_empty_##type(stack)) {                                                                  \
-      _stack_abort##type(__FILE__, __LINE__, __func__,                                                   \
-                         "Attempting to pop from empty stack (of capacity %" U64f ")", stack->capacity); \
-    }                                                                                                    \
-                                                                                                         \
-    return stack->data[--stack->top];                                                                    \
-  }                                                                                                      \
-                                                                                                         \
-  /* Get the top element of a stack without removing it */                                               \
-  attributes type stack_peek_##type(const type##Stack *stack) {                                          \
-    if (stack_is_empty_##type(stack)) {                                                                  \
-      _stack_abort##type(__FILE__, __LINE__, __func__,                                                   \
-                         "Attempting to peek at empty stack (of capacity %" U64f ")", stack->capacity);  \
-    }                                                                                                    \
-                                                                                                         \
-    return stack->data[stack->top - 1];                                                                  \
-  }                                                                                                      \
-                                                                                                         \
-  /* Push a value to the top of the stack */                                                             \
-  attributes void stack_push_##type(type##Stack *stack, type value) {                                    \
-    if (stack_is_full_##type(stack)) {                                                                   \
-      _stack_abort##type(__FILE__, __LINE__, __func__,                                                   \
-                         "Attempting to push to full stack (of capacity %" U64f ")", stack->capacity);   \
-    }                                                                                                    \
-    stack->data[stack->top++] = value;                                                                   \
-  }                                                                                                      \
-                                                                                                         \
+#define _define_stack_methods_with_attributes(type, attributes)                                                  \
+  /* Abort used in stack methods. Should not be used outside of these */                                         \
+  [[noreturn]] static void _stack_abort##type(const char *file, int line, const char *func, ...) {               \
+    va_list args;                                                                                                \
+    va_start(args, func);                                                                                        \
+                                                                                                                 \
+    const char *message = va_arg(args, const char *);                                                            \
+                                                                                                                 \
+    fprintf(stderr, "\n");                                                                                       \
+    fprintf(stderr, "> ---| Stack error |---\n");                                                                \
+    fprintf(stderr, "> Error in %s->%s (line %d)\n", file, func, line);                                          \
+    fprintf(stderr, "> ");                                                                                       \
+    vfprintf(stderr, message, args);                                                                             \
+    fprintf(stderr, "\n");                                                                                       \
+    fprintf(stderr, "Terminating program\n");                                                                    \
+                                                                                                                 \
+    va_end(args);                                                                                                \
+                                                                                                                 \
+    exit(EXIT_FAILURE);                                                                                          \
+  }                                                                                                              \
+                                                                                                                 \
+  /* Initialise a stack given pointer to a container and its capacity (number of elements) */                    \
+  attributes type##Stack stack_init_##type(type *data, U64 capacity) {                                           \
+    return (type##Stack){data, 0, capacity};                                                                     \
+  }                                                                                                              \
+                                                                                                                 \
+  /* Initialise a stack of a given capacity (number of elements) on the passed arena */                          \
+  attributes type##Stack stack_init_arena_##type(Arena *a, U64 capacity) {                                       \
+    return stack_init_##type(arena_alloc_array(a, type, capacity), capacity);                                    \
+  }                                                                                                              \
+                                                                                                                 \
+  /* Determine whether the given stack is at capacity */                                                         \
+  attributes bool stack_is_full_##type(const type##Stack *stack) {                                               \
+    return (stack->top == stack->capacity);                                                                      \
+  }                                                                                                              \
+                                                                                                                 \
+  /* Determine whether the given stack is empty */                                                               \
+  attributes bool stack_is_empty_##type(const type##Stack *stack) {                                              \
+    return (stack->top == 0);                                                                                    \
+  }                                                                                                              \
+                                                                                                                 \
+  /* Get the index of the top of the stack */                                                                    \
+  attributes U64 stack_get_top_##type(const type##Stack *stack) {                                                \
+    return stack->top;                                                                                           \
+  }                                                                                                              \
+                                                                                                                 \
+  /* Get the capacity of the stack */                                                                            \
+  attributes U64 stack_get_capacity_##type(const type##Stack *stack) {                                           \
+    return stack->capacity;                                                                                      \
+  }                                                                                                              \
+                                                                                                                 \
+  /* Remove and return the top element of a stack */                                                             \
+  attributes type stack_pop_##type(type##Stack *stack) {                                                         \
+    if (stack_is_empty_##type(stack)) {                                                                          \
+      _stack_abort##type(__FILE__, __LINE__, __func__,                                                           \
+                         "Attempting to pop from empty stack (of capacity %" U64f ")", stack->capacity);         \
+    }                                                                                                            \
+                                                                                                                 \
+    return stack->data[--stack->top];                                                                            \
+  }                                                                                                              \
+                                                                                                                 \
+  /* Get the top element of a stack without removing it */                                                       \
+  attributes type stack_peek_##type(const type##Stack *stack) {                                                  \
+    if (stack_is_empty_##type(stack)) {                                                                          \
+      _stack_abort##type(__FILE__, __LINE__, __func__,                                                           \
+                         "Attempting to peek at empty stack (of capacity %" U64f ")", stack->capacity);          \
+    }                                                                                                            \
+                                                                                                                 \
+    return stack->data[stack->top - 1];                                                                          \
+  }                                                                                                              \
+                                                                                                                 \
+  /* Get a reference to the top element of a stack without removing it */                                        \
+  attributes type *stack_get_top_ref_##type(type##Stack *stack) {                                                \
+    if (stack_is_empty_##type(stack)) {                                                                          \
+      _stack_abort##type(__FILE__, __LINE__, __func__,                                                           \
+                         "Attempting to reference top of empty stack (of capacity %" U64f ")", stack->capacity); \
+    }                                                                                                            \
+                                                                                                                 \
+    return stack->data + stack->top - 1;                                                                         \
+  }                                                                                                              \
+                                                                                                                 \
+  /* Push a value to the top of the stack */                                                                     \
+  attributes void stack_push_##type(type##Stack *stack, type value) {                                            \
+    if (stack_is_full_##type(stack)) {                                                                           \
+      _stack_abort##type(__FILE__, __LINE__, __func__,                                                           \
+                         "Attempting to push to full stack (of capacity %" U64f ")", stack->capacity);           \
+    }                                                                                                            \
+    stack->data[stack->top++] = value;                                                                           \
+  }                                                                                                              \
+                                                                                                                 \
   eat_semicolon()
 /*---------------------------------------------------------------------------------------------------------------*/
 

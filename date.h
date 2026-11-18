@@ -21,7 +21,7 @@ typedef U32 Date;
 define_array(Date);
 define_node(Date);
 
-typedef enum DayOfWeek {
+typedef enum DayOfWeek : I32 {
   DAY_MON = 0,
   DAY_TUE = 1,
   DAY_WED = 2,
@@ -34,7 +34,7 @@ typedef enum DayOfWeek {
 typedef U32 Day;
 #define Dayf U32f
 
-typedef enum Month {
+typedef enum Month : I32 {
   MONTH_JAN = 1,
   MONTH_FEB = 2,
   MONTH_MAR = 3,

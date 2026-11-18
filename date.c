@@ -97,9 +97,9 @@ Date date_add_days(Date date, I32 days) {
 }
 
 Date date_add_months(Date date, I32 months) {
-  I32 months_diff = date_get_month(date) + months;
-  Month new_month = mod(months_diff - 1, 12) + 1;
-  Year new_year = date_get_year(date) + ((months_diff - 1) / 12) - (months_diff <= 0);
+  I32 m = date_get_month(date) + months;
+  Year new_year = date_get_year(date) + ((m > 0) ? ((m - 1) / 12) : ((m / 12) - 1));
+  Month new_month = mod(m - 1, 12) + 1;
 
   // If adding months causes the day to be too large, just set it to be the last day of the new month
   Day new_day = clamp_above(date_get_day(date), month_get_days_in_month(new_month));

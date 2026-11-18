@@ -146,7 +146,7 @@ String string_concat_arr(Arena *a, const StringArray str_arr) {
   return string_init(result_str, result_len);
 }
 
-String string_join(Arena *a, String delimeter, U64 count, ...) {
+String string_join(Arena *a, String delimiter, U64 count, ...) {
   va_list args;
   va_start(args, count);
 
@@ -159,19 +159,19 @@ String string_join(Arena *a, String delimeter, U64 count, ...) {
 
   va_end(args);
 
-  String result = string_join_arr(a, delimeter, (StringArray){strings, count});
+  String result = string_join_arr(a, delimiter, (StringArray){strings, count});
 
   arena_free(&strings_arena);
 
   return result;
 }
 
-String string_join_arr(Arena *a, String delimeter, const StringArray str_arr) {
+String string_join_arr(Arena *a, String delimiter, const StringArray str_arr) {
   if (str_arr.count == 0) {
     return string_literal("");
   }
 
-  U64 result_len = delimeter.len * (str_arr.count - 1);
+  U64 result_len = delimiter.len * (str_arr.count - 1);
 
   for (U64 i = 0; i < str_arr.count; ++i) {
     result_len += str_arr.data[i].len;
@@ -184,8 +184,8 @@ String string_join_arr(Arena *a, String delimeter, const StringArray str_arr) {
     memcpy(result_str + pos, str_arr.data[i].str, str_arr.data[i].len);
     pos += str_arr.data[i].len;
 
-    memcpy(result_str + pos, delimeter.str, delimeter.len);
-    pos += delimeter.len;
+    memcpy(result_str + pos, delimiter.str, delimiter.len);
+    pos += delimiter.len;
   }
 
   memcpy(result_str + pos, str_arr.data[str_arr.count - 1].str, str_arr.data[str_arr.count - 1].len);
@@ -347,11 +347,11 @@ LinkNode *string_find_all(Arena *a, String str, String substr) {
   return head;
 }
 
-LinkNode *string_split(Arena *a, String str, String delimeter) {
+LinkNode *string_split(Arena *a, String str, String delimiter) {
   LinkNode *head = arena_alloc_single(a, LinkNode);
   linked_list_init(head);
 
-  if (delimeter.len == 0) {
+  if (delimiter.len == 0) {
     StringNode *node = arena_alloc_single(a, StringNode);
     node->data = string_copy(a, str);
 
@@ -361,7 +361,7 @@ LinkNode *string_split(Arena *a, String str, String delimeter) {
   }
 
   for (U64 i = 0, curr_str_len = 0; i <= str.len; ++i) {
-    if ((i == str.len) || string_equals(string_init(str.str + i, delimeter.len), delimeter)) {
+    if ((i == str.len) || string_equals(string_init(str.str + i, delimiter.len), delimiter)) {
       if (curr_str_len > 0) {
         StringNode *node = arena_alloc_single(a, StringNode);
         node->data = string_init_substring(str, i - curr_str_len, i);
@@ -370,7 +370,7 @@ LinkNode *string_split(Arena *a, String str, String delimeter) {
       }
 
       curr_str_len = 0;
-      i += delimeter.len - 1;
+      i += delimiter.len - 1;
 
       continue;
     }

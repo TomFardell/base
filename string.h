@@ -63,9 +63,9 @@ String string_concat(Arena *a, U64 count, ...);
 // Concatenate an array of strings
 String string_concat_arr(Arena *a, const StringArray str_arr);
 // Join strings passed as variadic args with a given delimiter
-String string_join(Arena *a, String delimeter, U64 count, ...);
+String string_join(Arena *a, String delimiter, U64 count, ...);
 // Join an array of strings with a given delimiter
-String string_join_arr(Arena *a, String delimeter, const StringArray str_arr);
+String string_join_arr(Arena *a, String delimiter, const StringArray str_arr);
 // Get the uppercase of a string
 String string_upper(Arena *a, String str);
 // Get the lowercase of a string
@@ -87,7 +87,7 @@ U64 string_find_first(String str, String substr);
 LinkNode *string_find_all(Arena *a, String str, String substr);
 
 // Split a string into a linked list of tokens on a given delimiter
-LinkNode *string_split(Arena *a, String str, String delimeter);
+LinkNode *string_split(Arena *a, String str, String delimiter);
 
 // Add a string to the end of a string builder
 void string_builder_add_string(Arena *a, LinkNode *sb_head, String str);
